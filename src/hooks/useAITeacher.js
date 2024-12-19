@@ -16,9 +16,12 @@ export const useAITeacher = create((set, get) => ({
     }));
   },
   classroom: "default",
-  setClassroom: (classroom) => {
+
+  // Corrected the typo here from 'Langauage' to 'Language'
+  Language: 'English',
+  setLanguage: (Language) => {  // Also update here
     set(() => ({
-      classroom,
+      Language,
     }));
   },
   loading: false,
@@ -70,8 +73,9 @@ export const useAITeacher = create((set, get) => ({
       }));
       // Get TTS
       const audioRes = await fetch(
-        `/api/tts?teacher=${get().teacher}&text=${message.answer.text}`
+        `/api/tts?teacher=${get().teacher}&text=${message.answer.text}&language=${get().Language}` // Use `get().Language` here
       );
+      
       
       const audio = await audioRes.blob();
       const audioUrl = URL.createObjectURL(audio);

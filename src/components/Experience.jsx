@@ -29,16 +29,7 @@ const itemPlacement = {
     board: {
       position: [0.45, 0.382, -6],
     },
-  },
-  alternative: {
-    classroom: {
-      position: [0.3, -1.7, -1.5],
-      rotation: [0, degToRad(-90), 0],
-      scale: 0.4,
-    },
-    teacher: { position: [-1, -1.7, -3] },
-    board: { position: [1.4, 0.84, -8] },
-  },
+  }
 };
 
 export const Experience = () => {
@@ -147,4 +138,4 @@ const CameraManager = () => {
 };
 
 useGLTF.preload("/models/classroom_default.glb");
-useGLTF.preload("/models/classroom_alternative.glb");
+
