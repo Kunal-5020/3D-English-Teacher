@@ -1,57 +1,103 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { serialize, parse } from "cookie";
 
 const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-let conversationHistory = []; // Store the conversation history
-
 export async function GET(req) {
-  // Get the user's question from the URL query parameter
+  // Retrieve conversation history from the cookie
+  const cookies = parse(req.headers.get("cookie") || "");
+  let conversationHistory = cookies.conversationHistory ? JSON.parse(cookies.conversationHistory) : [];
+  
   const question = req.nextUrl.searchParams.get("question") || "Introduce yourself and ask for the user name";
+  let languageMode = "English";
 
-  // Define the prompt for the AI model
-  const prompt = `
-  You are an English language assistant designed to help users learn English. Follow these instructions:
+  if (question.includes("HindiModeActivate")) {
+    languageMode = "Hindi";
+  } else if (question.includes("HindiModeDeactivate") || question.includes("EnglishModeActivate")) {
+    languageMode = "English";
+  }
 
-  1. If the user speaks in Hindi:
-     - Explain the translation briefly in Hindi, e.g., "Aap is vaaky ko angrejee mein is tarah bol sakte hain - <English translation>."
+  const formattedHistory = conversationHistory.length
+    ? conversationHistory.map(({ user, assistant }) => `User: ${user}\nAssistant: ${assistant}`).join("\n")
+    : "No previous conversation.";
 
-  2. If the user speaks in English:
-     - Analyze their sentence for any grammar mistakes.
-     - Provide corrections and explanations for the mistakes, but keep the response short (100-150 characters max).
-     - If the user asks about a large topic, break the explanation into smaller parts. Send one part first and wait for user confirmation (e.g., "Would you like me to continue?") before sending the next.
-     - If there are no grammar mistakes, do not include the "grammar_mistakes" field in your response.
-
-  3. Engage the user in different scenarios such as normal conversations, asking questions, or providing exercises to enhance their English learning experience. Keep responses interactive and encourage the user to speak or answer questions.
-
-  4. Always respond in the following JSON structure:
+    const prompt = `
+    You are an advanced English learning assistant designed to help users improve their English skills. Follow these rules based on the language mode:
+    
+    **Language Mode: ${languageMode}**
+  
+    1.Always respond in the following JSON structure:
     {
-      "text": "<The assistant's reply in natural, conversational language (100 characters max unless continued)>",
+      "text": "<The assistant's reply in natural, conversational language>",
       "grammar_mistakes": "<Detailed explanation of any grammar mistakes in the user's sentence (only if there are mistakes)>"
     }
+    
+    2. **If the user speaks in Hindi (Hindi Mode)**:
+       - Respond in Hindi unless the user asks otherwise.
+       - Use simple, clear Hindi ensuring it’s easy to understand.
+       - if the user response in english then still send your response in Hindi.
+    
+    3. **If the user speaks in English (English Mode)**:
+       - Analyze the user’s sentence for grammar, spelling, or phrasing issues.
+       - Provide corrections with concise explanations (100-150 characters). If the explanation is longer, divide it into parts and confirm before continuing (e.g., "Would you like me to continue?").
+       - If there are no mistakes then just give the grammerMistake as null.
+       -if the user replys in hindi then translate the user’s sentence into English, providing a brief explanation in Hindi, e.g., "Aap is vaaky ko angrezee mein is tarah bol sakte hain".
+    
+    4. **General Rules for Both Modes**:
+       - Always keep responses concise, interactive, and engaging.
+       - If the user’s query relates to a large topic, divide your explanation into smaller, digestible parts and seek confirmation after each.
+       - Verify that your responses are accurate, clear, and grammatically correct, with no repeated or irrelevant information.
+       - For scenario-based exercises or tasks (e.g., role-playing conversations), guide the user step by step.
+       - And always verify the response before sending it to the user, that does the reply matches the desired results user wants.
+       - Make sure the response is proper and make sense and doesnt contain any grammatical errors or repeated words, simply put the response should be clear and concise.
+  
+    
+    5. **Language Mode Switching**:
+       - If the user sends "HindiModeActivate," switch to Hindi for all responses until "HindiModeDeactivate" or "EnglishModeActivate" is received.
+       - Acknowledge the mode change in your first response after activation.
+  
+    
+    
+    **Conversation History**:
+    ${formattedHistory}
+    
+    **User’s Current Reply or question**:
+    User - ${question}
+    `;
 
-  5. Ensure that your replies are concise and clear. If a lengthy explanation is needed, split it into smaller parts and confirm after each part.
-
-  Here is the conversation history:
-  ${conversationHistory.join("\n")}
-
-  User's current question:
-  ${question || "Introduce yourself and ask for the user's name."}
-`;
 
   try {
-    // Generate response from the AI model
-    const result = await model.generateContent( prompt );
+    const result = await model.generateContent(prompt);
+    let example;
 
-    // Add the user's question and AI's response to the conversation history
-    conversationHistory.push({ user: question, assistant: result.response });
+    try {
+      example = JSON.parse(
+        result.response.candidates[0].content.parts[0].text.replace(/```json|```/g, "").trim()
+      );
+    } catch (parseError) {
+      throw new Error("Failed to parse AI response JSON");
+    }
 
-    // Return the AI's response as JSON
-    return Response.json({
-      result: result.response,
+    // Update the conversation history
+    conversationHistory.push({ user: question, assistant: example.text });
+
+    
+
+    // Set the updated conversation history in the cookies
+    const cookieValue = serialize("conversationHistory", JSON.stringify(conversationHistory), { path: "/" });
+    return new Response(JSON.stringify({ result: example }), {
+      headers: {
+        'Content-Type': 'application/json',
+        'Set-Cookie': cookieValue
+      }
     });
+    
   } catch (error) {
     console.error("Error generating content:", error);
-    return Response.json({ error: "Failed to generate response" }, { status: 500 });
+    return new Response(
+      JSON.stringify({ error: "Failed to generate response" }), 
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
+    );
   }
 }
