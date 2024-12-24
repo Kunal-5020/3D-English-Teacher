@@ -14,7 +14,7 @@ export const BoardSettings = () => {
           <div
             key={idx}
             className={`p-3 transition-colors duration-500 ${
-              teacher === sensei ? "bg-white/80" : "bg-white/40"
+              teacher === sensei ? "bg-white/100" : "bg-white/50"
             }`}
           >
             <div onClick={() => setTeacher(sensei)}>
@@ -36,7 +36,7 @@ export const BoardSettings = () => {
       <div className="absolute left-0 top-full flex flex-row gap-2 mt-20">
         <button
           className={`${
-            Language === "English" ? "text-white bg-slate-900/40" : "text-white/45 bg-slate-700/20"
+            Language === "English" ? "text-white bg-slate-900/80" : "text-white/45 bg-slate-700/60"
           } py-4 px-10 text-4xl rounded-full transition-colors duration-500 backdrop-blur-md`}
           onClick={() => setLanguage("English")}
         >
@@ -44,7 +44,7 @@ export const BoardSettings = () => {
         </button>
         <button
           className={`${
-            Language === "Hindi" ? "text-white bg-slate-900/40" : "text-white/45 bg-slate-700/20"
+            Language === "Hindi" ? "text-white bg-slate-900/80" : "text-white/45 bg-slate-700/60"
           } py-4 px-10 text-4xl rounded-full transition-colors duration-500 backdrop-blur-md`}
           onClick={() => setLanguage("Hindi")}
         >

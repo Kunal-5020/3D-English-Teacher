@@ -88,7 +88,7 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
 
           <div className="flex gap-2 items-center justify-center">
             <button
-              className={`px-4 py-2 rounded-lg text-white text-sm ${
+              className={`px-4 py-2 rounded-lg text-white text-sm bg-blue-500 ${
                 !question.trim() ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={ask}

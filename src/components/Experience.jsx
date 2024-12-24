@@ -68,7 +68,7 @@ export const Experience = () => {
       />
       
       {/* Show the Leva panel here */}
-      <Leva hidden/>
+      <Leva hidden />
       
       <Loader />
       <Canvas
@@ -120,8 +120,8 @@ const CAMERA_POSITIONS = {
 };
 
 const CAMERA_ZOOMS = {
-  default: 1,
-  loading: 1.3,
+  default: 1.5,
+  loading: 1.8,
   speaking: 2.1204819420055387,
 
    // Mobile Default Zoom
@@ -161,8 +161,10 @@ const CameraManager = () => {
         controls.current.zoomTo(CAMERA_ZOOMS.mobileDefault);
       } else {
         controls.current.camera.position.set(0, 3, 5); // Adjusted for desktop view
-        controls.current.camera.fov = 75; // Default field of view for desktop
+        controls.current.camera.fov = 60; // Default field of view for desktop
         // Set zoom levels for desktop
+        controls.current.zoomTo(CAMERA_ZOOMS.default);
+
         controls.current.minZoom = 1;
         controls.current.maxZoom = 3;
       }
