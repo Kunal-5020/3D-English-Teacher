@@ -1,19 +1,15 @@
-import { useEffect } from "react";
 import { teachers, useAITeacher } from "@/hooks/useAITeacher";
 
 export const BoardSettings = () => {
   const teacher = useAITeacher((state) => state.teacher);
   const setTeacher = useAITeacher((state) => state.setTeacher);
 
-  const speech = useAITeacher((state) => state.speech);
-  const setSpeech = useAITeacher((state) => state.setSpeech);
-
   const Language = useAITeacher((state) => state.Language); // Corrected typo
   const setLanguage = useAITeacher((state) => state.setLanguage);
 
   return (
     <>
-      <div className="absolute right-0 bottom-full flex flex-row gap-10 mb-20">
+      <div className="absolute left-0 bottom-full flex flex-row gap-10 mb-20">
         {teachers.map((sensei, idx) => (
           <div
             key={idx}
@@ -35,14 +31,16 @@ export const BoardSettings = () => {
         ))}
       </div>
 
-      <div className="absolute left-0 bottom-full flex flex-row gap-2 mb-20">
+      
+
+      <div className="absolute left-0 top-full flex flex-row gap-2 mt-20">
         <button
           className={`${
             Language === "English" ? "text-white bg-slate-900/40" : "text-white/45 bg-slate-700/20"
           } py-4 px-10 text-4xl rounded-full transition-colors duration-500 backdrop-blur-md`}
           onClick={() => setLanguage("English")}
         >
-          English
+          English Accent
         </button>
         <button
           className={`${
@@ -50,26 +48,7 @@ export const BoardSettings = () => {
           } py-4 px-10 text-4xl rounded-full transition-colors duration-500 backdrop-blur-md`}
           onClick={() => setLanguage("Hindi")}
         >
-          Hindi
-        </button>
-      </div>
-
-      <div className="absolute left-0 top-full flex flex-row gap-2 mt-20">
-        <button
-          className={`${
-            speech === "formal" ? "text-white bg-slate-900/40" : "text-white/45 bg-slate-700/20"
-          } py-4 px-10 text-4xl rounded-full transition-colors duration-500 backdrop-blur-md`}
-          onClick={() => setSpeech("formal")}
-        >
-          Formal
-        </button>
-        <button
-          className={`${
-            speech === "casual" ? "text-white bg-slate-900/40" : "text-white/45 bg-slate-700/20"
-          } py-4 px-10 text-4xl rounded-full transition-colors duration-500 backdrop-blur-md`}
-          onClick={() => setSpeech("casual")}
-        >
-          Casual
+          Hindi Accent
         </button>
       </div>
     </>
