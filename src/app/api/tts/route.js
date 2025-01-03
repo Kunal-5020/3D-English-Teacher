@@ -20,7 +20,6 @@ export async function GET(req) {
     try {
       language = req.nextUrl.searchParams.get("language") || "English";  // Attempt to retrieve the language
       // If invalid language, default to English
-      console.log(language);
       if (language !== "Hindi" && language !== "English") {
         throw new Error(`Invalid language: ${language}`);
       }

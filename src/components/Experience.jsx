@@ -36,10 +36,26 @@ const itemPlacement = {
 
 export const Experience = () => {
   const teacher = useAITeacher((state) => state.teacher);
+  const askAI = useAITeacher((state) => state.askAI);
   const classroom = useAITeacher((state) => state.classroom);
   const [showTypingField, setShowTypingField] = useState(true);
   const [showVoicePreview, setShowVoicePreview] = useState(false);
-  const [showSidebar, setShowSidebar] = useState(false); // State for sidebar visibility
+  const [showSidebar, setShowSidebar] = useState(false); 
+
+  useEffect(() => {
+    
+    
+      // Check if the greeting has already been sent in the session
+      const greetingSent = sessionStorage.getItem("greetingSent");
+
+      if (!greetingSent) {
+        const greetingQuestion = `Welcome Greeting to the user`;
+        askAI(greetingQuestion);
+        // Set the flag in sessionStorage to indicate the greeting has been sent
+        sessionStorage.setItem("greetingSent", "true");
+      }
+    
+  }, [ askAI]);
 
   return (
     <>

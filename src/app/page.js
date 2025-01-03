@@ -1,9 +1,12 @@
-import { Experience } from "@/components/Experience";
+import Main from '@/components/Main';
+import { GlobalProvider } from '@/context/globalContext';
 
 export default function Home() {
   return (
-    <main className="h-screen min-h-screen">
-      <Experience />
-    </main>
+    <GlobalProvider>
+      <main className="h-screen min-h-screen">
+        <Main />
+      </main>
+    </GlobalProvider>
   );
 }

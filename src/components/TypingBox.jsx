@@ -17,7 +17,11 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
       recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
       recognitionRef.current.lang = "en-IN";
     }
+
+
   }, []);
+
+
 
   const startRecording = () => {
     if (!recognitionRef.current) {

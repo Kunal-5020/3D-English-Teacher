@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 export const MessagesList = () => {
   const messages = useAITeacher((state) => state.messages);
   const playMessage = useAITeacher((state) => state.playMessage);
+  const stopMessage = useAITeacher((state) => state.stopMessage);
   const { currentMessage } = useAITeacher();
   const classroom = useAITeacher((state) => state.classroom);
 
@@ -41,17 +42,8 @@ export const MessagesList = () => {
           <div className="flex">
             <div className="flex-grow">
               <div className="flex items-center gap-3">
-                <span
-                  className={`text-white/90 text-2xl font-bold uppercase px-3 py-1 rounded-full  ${
-                    message.speech === "formal"
-                      ? "bg-indigo-600"
-                      : "bg-teal-600"
-                  }`}
-                >
-                  {message.speech}
-                </span>
                 <p className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90">
-          {message.answer.text}
+          {message.answer.ReplyForUser}
         </p>
               </div>
             </div>
@@ -107,12 +99,7 @@ export const MessagesList = () => {
               </button>
             )}
           </div>
-          {message.answer.grammar_mistakes !== "" && (<div className="p-5 mt-5  bg-gradient-to-br from-pink-200/20 to-pink-500/20 rounded-xl">
-            <span className="pr-4 italic bg-clip-text text-transparent bg-gradient-to-b from-white/90 to-white/70 text-3xl font-bold uppercase inline-block">
-              Grammar Mistakes
-            </span>
-            <p style={{ fontSize: "25px", paddingTop: "10px" }}>{message.answer.grammar_mistakes}</p>
-          </div>)}
+          
         </div>
       ))}
     </div>
