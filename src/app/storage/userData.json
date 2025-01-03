@@ -1,12 +1,12 @@
 {
-  "_id": "6777991a3cf85f60621d215c",
+  "_id": "6777ff0ffd1d4ef26e6a2e2e",
   "name": "kunal",
   "email": "kunalbhadana15@gmail.com",
-  "password": "$2b$10$BU1.L/N/L2SwHuOkFPELBOcOFBySUV3S7YDAeuc8tHgSUnl7N/g2.",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$DxtE/Bz+THZpLn5BzlUgjg$ZfZNdJPV70NhyBOv1u13lW67II5tB/EbV38RVNruZwQ",
   "age": 21,
   "highestEducation": "graduate",
-  "allHistorySummary": "Day 1: Introduction complete.  User greeted.",
-  "createdAt": "2025-01-03T08:00:26.559Z",
-  "updatedAt": "2025-01-03T08:00:26.559Z",
+  "allHistorySummary": "Day 1: Introduction complete.  User greeted and welcomed to the 90-day plan.  Next steps: practicing basic greetings and introductions.",
+  "createdAt": "2025-01-03T15:15:27.418Z",
+  "updatedAt": "2025-01-03T15:15:27.418Z",
   "__v": 0
 }

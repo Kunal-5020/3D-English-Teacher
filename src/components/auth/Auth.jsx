@@ -30,6 +30,8 @@ const Auth = ({ setIsAuthenticated }) => {
     e.preventDefault();
 
     const url = isLogin ? "https://voice-chat-server-w8qu.onrender.com/login" : "https://voice-chat-server-w8qu.onrender.com/signup";
+    // const url = isLogin ? "http://localhost:5000/login" : "http://localhost:5000/signup";
+
     const payload = isLogin
       ? { email: formData.email, password: formData.password }
       : {
