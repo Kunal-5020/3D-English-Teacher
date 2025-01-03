@@ -11,7 +11,7 @@ const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 async function updateHistory(userId, historyEntry) {
-  const apiUrl = "http://localhost:3000/updatehistory"; // Replace with your server URL
+  const apiUrl = "https://voice-chat-server-w8qu.onrender.com/updatehistory"; // Replace with your server URL
 
   const requestData = {
     id: userId,

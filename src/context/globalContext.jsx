@@ -19,7 +19,7 @@ export const GlobalProvider = ({ children }) => {
   // Function to sync data with the server
   const syncWithServer = async (dataType, data) => {
     try {
-      await fetch(`http://localhost:3000/${dataType}`, {
+      await fetch(`https://voice-chat-server-w8qu.onrender.com/${dataType}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
