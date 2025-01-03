@@ -17,6 +17,8 @@ export default function Main() {
     if (token) {
       setIsAuthenticated(true);
       setLoading(false);
+    }else {
+      setLoading(false); // Ensure loading is set to false if no token exists
     }
   }, []);
 

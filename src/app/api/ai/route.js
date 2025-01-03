@@ -218,7 +218,7 @@ Day 90: Personality Development - Part 5
 - Age: ${userData.age}
 - Highest Education: ${userData.highestEducation}
 
-- Checklist Day: ${Math.ceil((new Date().toISOString() - userData.createdAt) / (1000 * 60 * 60 * 24))} day (continue with this day unless instructed otherwise)
+- Checklist Day: ${Math.ceil((new Date().toISOString() - userData.createdAt) / (1000 * 60 * 60 * 24))|| '1'} day (continue with this day unless instructed otherwise)
 - Current History: ${formattedHistory || "No recent activity"}
 - All Summary History: ${userData.allHistorySummary ==='' ? userData.allHistorySummary :'No History'}
 
@@ -259,7 +259,7 @@ console.log('history',userData.allHistorySummary);
     userData.checklist = example.ChecklistDay;
     userData.allHistorySummary = example.AllSummaryHistory;
 
-    updateHistory(userData._id,userData.allHistorySummary)
+    if (question !=='Welcome Greeting to the user'){updateHistory(userData._id,userData.allHistorySummary)}
 
     saveUserData(userData);
 
