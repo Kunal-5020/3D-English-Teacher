@@ -29,8 +29,7 @@ const Auth = ({ setIsAuthenticated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const url = isLogin ? "https://voice-chat-server-w8qu.onrender.com/login" : "https://voice-chat-server-w8qu.onrender.com/signup";
-    // const url = isLogin ? "http://localhost:5000/login" : "http://localhost:5000/signup";
+    const url = isLogin ? "/api/auth/login" : "/api/auth/signup";
 
     const payload = isLogin
       ? { email: formData.email, password: formData.password }
@@ -57,21 +56,7 @@ const Auth = ({ setIsAuthenticated }) => {
           localStorage.setItem("token", result.token);
           setIsAuthenticated(true); // Update parent component to indicate user is logged in
           setMessage("Login Successful!");
-           // Send user data to the server asynchronously after login
-        const aiResponse = await fetch("/api/user", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${result.token}`,
-          },
-          body: JSON.stringify({ user: result.user }),
-        });
-        
-        if (!aiResponse.ok) {
-          console.error("AI Server interaction failed:", await aiResponse.text());
-        }else{
-          console.log("AI Server interaction successful",result.user);
-        }
+          
       
         } else {
           setMessage(result.message || "Signup successful!");

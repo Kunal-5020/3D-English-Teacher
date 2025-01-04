@@ -41,8 +41,6 @@ export const useAITeacher = create((set, get) => ({
     set(() => ({ loading: true }));
 
     try {
-      const response = await fetch("/api/getuser"); // Correct endpoint URL
-      const userData = await response.json();
       const res = await fetch(`/api/ai?question=${encodeURIComponent(question)}`);
       const data = await res.json();
       console.log('data -', data.result);

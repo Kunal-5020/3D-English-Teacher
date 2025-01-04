@@ -1,17 +1,19 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { serialize, parse } from "cookie";
 
-import { saveUserData,updateChecklist, updateAllHistorySummary} from "../user/storage.js";
-import fs from 'fs';
-import path from 'path';
+import { saveUserData,getUserData } from "../auth/login/storage.js";
+
+
+// import fs from 'fs';
+// import path from 'path';
 
 
 
 const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-async function updateHistory(userId, historyEntry) {
-  const apiUrl = "https://voice-chat-server-w8qu.onrender.com/updatehistory"; // Replace with your server URL
+async function updateHistory(userId, historyEntry) { 
+  const apiUrl = "api/auth/updatehistory"; 
 
   const requestData = {
     id: userId,
@@ -30,16 +32,16 @@ async function updateHistory(userId, historyEntry) {
     if (!response.ok) {
       const errorData = await response.json();
       console.error("Error updating history:", errorData.error);
-      alert(`Failed to update history: ${errorData.error}`);
+   
       return;
     }
 
     const updatedUser = await response.json();
     console.log("History updated successfully:", updatedUser);
-    alert("History updated successfully!");
+   
   } catch (error) {
     console.error("Error sending update request:", error);
-    alert("An error occurred while updating history.");
+    
   }
 }
 
@@ -60,15 +62,15 @@ export async function GET(req) {
     req.nextUrl.searchParams.get("question") ||
     "Start the conversation";
 
-    const filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
+    // const filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
 
-    function getUserData() {
-      if (fs.existsSync(filePath)) {
-        const data = fs.readFileSync(filePath, 'utf8');
-        return JSON.parse(data);
-      }
-      return null;
-    }
+    // function getUserData() {
+    //   if (fs.existsSync(filePath)) {
+    //     const data = fs.readFileSync(filePath, 'utf8');
+    //     return JSON.parse(data);
+    //   }
+    //   return null;
+    // }
 
  const userData = getUserData();
 

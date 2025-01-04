@@ -1,5 +1,5 @@
 
-import { getUserData } from "../user/storage";  // Adjust path if necessary
+import { getUserData } from "../auth/login/storage";  // Adjust path if necessary
 
 export async function GET(req) {
   try {
