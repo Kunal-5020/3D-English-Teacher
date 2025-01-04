@@ -3,12 +3,15 @@ import User from "../models/User";
 import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { saveUserData } from "./storage";
+config.dotenv
 
-const JWT_SECRET = "1234567890";
+const JWT_SECRET = process.env["JWT_SECRET"];
+
 
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
+    console.log(JWT_SECRET);
 
     await connectToDatabase();
 

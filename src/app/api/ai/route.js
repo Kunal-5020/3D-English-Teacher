@@ -3,15 +3,11 @@ import { serialize, parse } from "cookie";
 import { updateUserHistory } from "../auth/updatehistory/route.js";
 import { saveUserData,getUserData } from "../auth/login/storage.js";
 
-
 const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-
-
 export async function GET(req) {
   // Retrieve cookies
-
 
   const cookies = parse(req.headers.get("cookie") || "");
   let conversationHistory = cookies.conversationHistory
@@ -22,9 +18,7 @@ export async function GET(req) {
     req.nextUrl.searchParams.get("question") ||
     "Start the conversation";
 
-
  const userData = getUserData();
-
 
   const formattedHistory = conversationHistory.length
     ? conversationHistory
@@ -34,7 +28,6 @@ export async function GET(req) {
         .join("\n")
     : "No previous conversation.";
 
-   
 
   const prompt = `
 You are an advanced English learning assistant tasked with teaching the user English in 90 days, following a structured plan. Personalize all interactions using the user's information and ensure progress is recorded properly. Respond strictly in the following JSON structure:
@@ -58,7 +51,6 @@ You are an advanced English learning assistant tasked with teaching the user Eng
    - Exclude unnecessary details like the full day description repeatedly. Focus only on answering the user’s query or teaching the day’s topic.
 
 3. **Checklist Day and History**:
-   - Calculate the current day using: \`Math.ceil((new Date().toISOString() - userData.createdAt) / (1000 * 60 * 60 * 24))\`.
    - Limit progress to the active day unless the user requests to skip or revisit.
    - Update and expand the \`AllSummaryHistory\` concisely to reflect completed activities or new insights.
 
@@ -225,7 +217,6 @@ console.log('history',userData.allHistorySummary);
       },
 
     });
-
 
 
   } catch (error) {
