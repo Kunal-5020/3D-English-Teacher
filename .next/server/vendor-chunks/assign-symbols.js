@@ -1,0 +1,25 @@
+"use strict";
+/*
+ * ATTENTION: An "eval-source-map" devtool has been used.
+ * This devtool is neither made for production nor for readable output files.
+ * It uses "eval()" calls to create a separate source file with attached SourceMaps in the browser devtools.
+ * If you are trying to read the output file, select a different devtool (https://webpack.js.org/configuration/devtool/)
+ * or disable the default devtool with "devtool: false".
+ * If you are looking for production-ready output files, see mode: "production" (https://webpack.js.org/configuration/mode/).
+ */
+exports.id = "vendor-chunks/assign-symbols";
+exports.ids = ["vendor-chunks/assign-symbols"];
+exports.modules = {
+
+/***/ "(ssr)/./node_modules/assign-symbols/index.js":
+/*!**********************************************!*\
+  !*** ./node_modules/assign-symbols/index.js ***!
+  \**********************************************/
+/***/ ((module) => {
+
+eval("/*!\n * assign-symbols <https://github.com/jonschlinkert/assign-symbols>\n *\n * Copyright (c) 2015, Jon Schlinkert.\n * Licensed under the MIT License.\n */ \nmodule.exports = function(receiver, objects) {\n    if (receiver === null || typeof receiver === \"undefined\") {\n        throw new TypeError(\"expected first argument to be an object.\");\n    }\n    if (typeof objects === \"undefined\" || typeof Symbol === \"undefined\") {\n        return receiver;\n    }\n    if (typeof Object.getOwnPropertySymbols !== \"function\") {\n        return receiver;\n    }\n    var isEnumerable = Object.prototype.propertyIsEnumerable;\n    var target = Object(receiver);\n    var len = arguments.length, i = 0;\n    while(++i < len){\n        var provider = Object(arguments[i]);\n        var names = Object.getOwnPropertySymbols(provider);\n        for(var j = 0; j < names.length; j++){\n            var key = names[j];\n            if (isEnumerable.call(provider, key)) {\n                target[key] = provider[key];\n            }\n        }\n    }\n    return target;\n};\n//# sourceURL=[module]\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiKHNzcikvLi9ub2RlX21vZHVsZXMvYXNzaWduLXN5bWJvbHMvaW5kZXguanMiLCJtYXBwaW5ncyI6IkFBQUE7Ozs7O0NBS0MsR0FFRDtBQUVBQSxPQUFPQyxPQUFPLEdBQUcsU0FBU0MsUUFBUSxFQUFFQyxPQUFPO0lBQ3pDLElBQUlELGFBQWEsUUFBUSxPQUFPQSxhQUFhLGFBQWE7UUFDeEQsTUFBTSxJQUFJRSxVQUFVO0lBQ3RCO0lBRUEsSUFBSSxPQUFPRCxZQUFZLGVBQWUsT0FBT0UsV0FBVyxhQUFhO1FBQ25FLE9BQU9IO0lBQ1Q7SUFFQSxJQUFJLE9BQU9JLE9BQU9DLHFCQUFxQixLQUFLLFlBQVk7UUFDdEQsT0FBT0w7SUFDVDtJQUVBLElBQUlNLGVBQWVGLE9BQU9HLFNBQVMsQ0FBQ0Msb0JBQW9CO0lBQ3hELElBQUlDLFNBQVNMLE9BQU9KO0lBQ3BCLElBQUlVLE1BQU1DLFVBQVVDLE1BQU0sRUFBRUMsSUFBSTtJQUVoQyxNQUFPLEVBQUVBLElBQUlILElBQUs7UUFDaEIsSUFBSUksV0FBV1YsT0FBT08sU0FBUyxDQUFDRSxFQUFFO1FBQ2xDLElBQUlFLFFBQVFYLE9BQU9DLHFCQUFxQixDQUFDUztRQUV6QyxJQUFLLElBQUlFLElBQUksR0FBR0EsSUFBSUQsTUFBTUgsTUFBTSxFQUFFSSxJQUFLO1lBQ3JDLElBQUlDLE1BQU1GLEtBQUssQ0FBQ0MsRUFBRTtZQUVsQixJQUFJVixhQUFhWSxJQUFJLENBQUNKLFVBQVVHLE1BQU07Z0JBQ3BDUixNQUFNLENBQUNRLElBQUksR0FBR0gsUUFBUSxDQUFDRyxJQUFJO1lBQzdCO1FBQ0Y7SUFDRjtJQUNBLE9BQU9SO0FBQ1QiLCJzb3VyY2VzIjpbIndlYnBhY2s6Ly8zRC1BSS1FbmdsaXNoLy4vbm9kZV9tb2R1bGVzL2Fzc2lnbi1zeW1ib2xzL2luZGV4LmpzP2VhZWIiXSwic291cmNlc0NvbnRlbnQiOlsiLyohXG4gKiBhc3NpZ24tc3ltYm9scyA8aHR0cHM6Ly9naXRodWIuY29tL2pvbnNjaGxpbmtlcnQvYXNzaWduLXN5bWJvbHM+XG4gKlxuICogQ29weXJpZ2h0IChjKSAyMDE1LCBKb24gU2NobGlua2VydC5cbiAqIExpY2Vuc2VkIHVuZGVyIHRoZSBNSVQgTGljZW5zZS5cbiAqL1xuXG4ndXNlIHN0cmljdCc7XG5cbm1vZHVsZS5leHBvcnRzID0gZnVuY3Rpb24ocmVjZWl2ZXIsIG9iamVjdHMpIHtcbiAgaWYgKHJlY2VpdmVyID09PSBudWxsIHx8IHR5cGVvZiByZWNlaXZlciA9PT0gJ3VuZGVmaW5lZCcpIHtcbiAgICB0aHJvdyBuZXcgVHlwZUVycm9yKCdleHBlY3RlZCBmaXJzdCBhcmd1bWVudCB0byBiZSBhbiBvYmplY3QuJyk7XG4gIH1cblxuICBpZiAodHlwZW9mIG9iamVjdHMgPT09ICd1bmRlZmluZWQnIHx8IHR5cGVvZiBTeW1ib2wgPT09ICd1bmRlZmluZWQnKSB7XG4gICAgcmV0dXJuIHJlY2VpdmVyO1xuICB9XG5cbiAgaWYgKHR5cGVvZiBPYmplY3QuZ2V0T3duUHJvcGVydHlTeW1ib2xzICE9PSAnZnVuY3Rpb24nKSB7XG4gICAgcmV0dXJuIHJlY2VpdmVyO1xuICB9XG5cbiAgdmFyIGlzRW51bWVyYWJsZSA9IE9iamVjdC5wcm90b3R5cGUucHJvcGVydHlJc0VudW1lcmFibGU7XG4gIHZhciB0YXJnZXQgPSBPYmplY3QocmVjZWl2ZXIpO1xuICB2YXIgbGVuID0gYXJndW1lbnRzLmxlbmd0aCwgaSA9IDA7XG5cbiAgd2hpbGUgKCsraSA8IGxlbikge1xuICAgIHZhciBwcm92aWRlciA9IE9iamVjdChhcmd1bWVudHNbaV0pO1xuICAgIHZhciBuYW1lcyA9IE9iamVjdC5nZXRPd25Qcm9wZXJ0eVN5bWJvbHMocHJvdmlkZXIpO1xuXG4gICAgZm9yICh2YXIgaiA9IDA7IGogPCBuYW1lcy5sZW5ndGg7IGorKykge1xuICAgICAgdmFyIGtleSA9IG5hbWVzW2pdO1xuXG4gICAgICBpZiAoaXNFbnVtZXJhYmxlLmNhbGwocHJvdmlkZXIsIGtleSkpIHtcbiAgICAgICAgdGFyZ2V0W2tleV0gPSBwcm92aWRlcltrZXldO1xuICAgICAgfVxuICAgIH1cbiAgfVxuICByZXR1cm4gdGFyZ2V0O1xufTtcbiJdLCJuYW1lcyI6WyJtb2R1bGUiLCJleHBvcnRzIiwicmVjZWl2ZXIiLCJvYmplY3RzIiwiVHlwZUVycm9yIiwiU3ltYm9sIiwiT2JqZWN0IiwiZ2V0T3duUHJvcGVydHlTeW1ib2xzIiwiaXNFbnVtZXJhYmxlIiwicHJvdG90eXBlIiwicHJvcGVydHlJc0VudW1lcmFibGUiLCJ0YXJnZXQiLCJsZW4iLCJhcmd1bWVudHMiLCJsZW5ndGgiLCJpIiwicHJvdmlkZXIiLCJuYW1lcyIsImoiLCJrZXkiLCJjYWxsIl0sInNvdXJjZVJvb3QiOiIifQ==\n//# sourceURL=webpack-internal:///(ssr)/./node_modules/assign-symbols/index.js\n");
+
+/***/ })
+
+};
+;

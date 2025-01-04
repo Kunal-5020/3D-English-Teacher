@@ -1,12 +1,12 @@
 {
-  "_id": "6778f7d93e9e8b2c8e08e975",
-  "name": "Lokesh Khaitan",
-  "email": "seoservicesdgtlmart@gmail.com",
-  "password": "$argon2id$v=19$m=65536,t=3,p=4$aADp95uLMwLdu0LcbFhnmw$bGrl/sjlELw4snuh03pa9+sOWfco3wZ5BXadC2Amxck",
-  "age": 45,
+  "_id": "6777ff0ffd1d4ef26e6a2e2e",
+  "name": "kunal",
+  "email": "kunalbhadana15@gmail.com",
+  "password": "$argon2id$v=19$m=65536,t=3,p=4$DxtE/Bz+THZpLn5BzlUgjg$ZfZNdJPV70NhyBOv1u13lW67II5tB/EbV38RVNruZwQ",
+  "age": 21,
   "highestEducation": "graduate",
-  "allHistorySummary": "Day 1: Introduction complete.  Day 2: Started learning parts of speech; Lokesh identified 'Kunal' as a proper noun.  Needs to provide more noun examples and move on to verbs and adjectives.",
-  "createdAt": "2025-01-04T08:56:57.280Z",
-  "updatedAt": "2025-01-04T08:56:57.280Z",
+  "allHistorySummary": "Day 1: Introduction completed.  Day 2: Started learning parts of speech.  Covered nouns (examples provided by Kunal), verbs (examples provided by Kunal).  Currently working on adjectives.",
+  "createdAt": "2025-01-03T15:15:27.418Z",
+  "updatedAt": "2025-01-04T09:46:13.301Z",
   "__v": 0
 }
