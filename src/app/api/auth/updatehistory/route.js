@@ -1,35 +1,29 @@
 import { connectToDatabase } from "../lib/mongodb";
 import User from "../models/User";
 
+/**
+ * Updates the user's history summary.
+ * @param {string} id - The ID of the user.
+ * @param {string} allHistorySummary - The updated history summary.
+ * @returns {Object} The updated user object or an error.
+ */
+export async function updateUserHistory(id, allHistorySummary) {
+  try {
+    await connectToDatabase();
 
-export async function PUT(req) {
-    try {
-      const { id, allHistorySummary } = await req.json();
-  
-      await connectToDatabase();
-  
-      const updatedUser = await User.findByIdAndUpdate(
-        id,
-        { allHistorySummary: allHistorySummary },
-        { new: true }
-      );
-  
-      if (!updatedUser) {
-        return new Response(
-          JSON.stringify({ error: "User not found" }),
-          { status: 404 }
-        );
-      }
-  
-      return new Response(
-        JSON.stringify(updatedUser),
-        { status: 200 }
-      );
-    } catch (error) {
-      console.error("Error updating history:", error);
-      return new Response(
-        JSON.stringify({ error: "Error updating history" }),
-        { status: 500 }
-      );
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { allHistorySummary },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      throw new Error("User not found");
     }
+
+    return { success: true, user: updatedUser };
+  } catch (error) {
+    console.error("Error updating user history:", error);
+    return { success: false, error: error.message };
   }
+}

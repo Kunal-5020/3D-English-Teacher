@@ -10,7 +10,7 @@ export const useAITeacher = create((set, get) => ({
   classroom: "default",
   speech: "formal",
   loading: false,
-
+  userInteracted: false, // Track if the user has interacted
 
   setTeacher: (teacher) => {
     set(() => ({
@@ -30,7 +30,9 @@ export const useAITeacher = create((set, get) => ({
     set(() => ({ speech }));
   },
 
-
+  markUserInteracted: () => {
+    set(() => ({ userInteracted: true }));
+  },
 
   askAI: async (question) => {
     if (!question) return;
@@ -43,7 +45,7 @@ export const useAITeacher = create((set, get) => ({
     try {
       const res = await fetch(`/api/ai?question=${encodeURIComponent(question)}`);
       const data = await res.json();
-      console.log('data -', data.result);
+      console.log("data -", data.result);
       message.answer = data.result;
       message.speech = speech;
 
@@ -62,6 +64,11 @@ export const useAITeacher = create((set, get) => ({
 
   playMessage: async (message) => {
     set(() => ({ currentMessage: message }));
+
+    if (!get().userInteracted) {
+      console.warn("Audio playback is blocked until user interaction.");
+      return; // Exit if no user interaction
+    }
 
     if (!message.audioPlayer) {
       set(() => ({ loading: true }));
@@ -113,3 +120,9 @@ const extractVisemesFromAudio = async (audioBlob) => {
     resolve(mockVisemes); // Return mock data for now
   });
 };
+
+// Add a listener to track user interaction
+if (typeof window !== "undefined") {
+  window.addEventListener("click", () => useAITeacher.getState().markUserInteracted(), { once: true });
+  window.addEventListener("keydown", () => useAITeacher.getState().markUserInteracted(), { once: true });
+}

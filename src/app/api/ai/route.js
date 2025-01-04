@@ -1,51 +1,11 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { serialize, parse } from "cookie";
-
+import { updateUserHistory } from "../auth/updatehistory/route.js";
 import { saveUserData,getUserData } from "../auth/login/storage.js";
-
-
-// import fs from 'fs';
-// import path from 'path';
-
 
 
 const genAI = new GoogleGenerativeAI(process.env["GEMINI_API_KEY"]);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-async function updateHistory(userId, historyEntry) { 
-  const apiUrl = "api/auth/updatehistory"; 
-
-  const requestData = {
-    id: userId,
-    allHistorySummary: historyEntry,
-  };
-
-  try {
-    const response = await fetch(apiUrl, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error updating history:", errorData.error);
-   
-      return;
-    }
-
-    const updatedUser = await response.json();
-    console.log("History updated successfully:", updatedUser);
-   
-  } catch (error) {
-    console.error("Error sending update request:", error);
-    
-  }
-}
-
-
 
 
 
@@ -62,19 +22,8 @@ export async function GET(req) {
     req.nextUrl.searchParams.get("question") ||
     "Start the conversation";
 
-    // const filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
-
-    // function getUserData() {
-    //   if (fs.existsSync(filePath)) {
-    //     const data = fs.readFileSync(filePath, 'utf8');
-    //     return JSON.parse(data);
-    //   }
-    //   return null;
-    // }
 
  const userData = getUserData();
-
-
 
 
   const formattedHistory = conversationHistory.length
@@ -228,7 +177,7 @@ Day 90: Personality Development - Part 5
 **User’s Current Reply or Question**:
 User - ${question}
 `;
-console.log('checklist',userData.checklist);
+
 console.log('history',userData.allHistorySummary);
 
 
@@ -262,7 +211,10 @@ console.log('history',userData.allHistorySummary);
     userData.checklist = example.ChecklistDay;
     userData.allHistorySummary = example.AllSummaryHistory;
 
-    if (question !=='Welcome Greeting to the user'){updateHistory(userData._id,userData.allHistorySummary)}
+    // if (question !=='Welcome Greeting to the user')
+    // {
+    updateUserHistory(userData._id,userData.allHistorySummary);
+      // }
 
     saveUserData(userData);
 
