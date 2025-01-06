@@ -4,17 +4,12 @@ import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import { saveUserData } from "./storage";
 
-
 const JWT_SECRET = process.env["JWT_SECRET"];
-
-
 
 export async function POST(req) {
   try {
     const { email, password } = await req.json();
     
-
-
     await connectToDatabase();
 
     const user = await User.findOne({ email });

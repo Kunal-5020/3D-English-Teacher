@@ -45,7 +45,7 @@ export const useAITeacher = create((set, get) => ({
     try {
       const res = await fetch(`/api/ai?question=${encodeURIComponent(question)}`);
       const data = await res.json();
-      console.log("data -", data.result);
+      // console.log("data -", data.result);
       message.answer = data.result;
       message.speech = speech;
 

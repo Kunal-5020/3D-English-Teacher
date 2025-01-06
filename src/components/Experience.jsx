@@ -20,6 +20,7 @@ import { Teacher } from "./Teacher";
 import { TypingBox } from "./TypingBox";
 import { SettingsSidebar } from "./SettingsSidebar"; // Import the sidebar
 
+
 const itemPlacement = {
   default: {
     classroom: {

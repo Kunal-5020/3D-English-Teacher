@@ -4,12 +4,9 @@ import { useEffect, useState } from "react";
 import { Experience } from "./Experience";
 import Auth from "./auth/Auth";
 
-
 export default function Main() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-
-
 
   // Check authentication status on mount
   useEffect(() => {

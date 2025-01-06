@@ -220,7 +220,6 @@ User - ${question}
 console.log('history',userData.allHistorySummary);
 console.log('checklist day',Math.ceil((new Date() - new Date(userData.createdAt)) / (1000 * 60 * 60 * 24))+1);
 
-
   try {
 
     const result = await model.generateContent(prompt);
@@ -252,10 +251,8 @@ console.log('checklist day',Math.ceil((new Date() - new Date(userData.createdAt)
     userData.checklist = example.ChecklistDay;
     userData.allHistorySummary = example.AllSummaryHistory;
 
-    
     updateUserHistory(userData._id,userData.allHistorySummary);
     
-
     saveUserData(userData);
 
     return new Response(JSON.stringify({ result: example }), {
@@ -265,8 +262,7 @@ console.log('checklist day',Math.ceil((new Date() - new Date(userData.createdAt)
       },
 
     });
-
-
+    
   } catch (error) {
     console.error("Error generating content:", error);
     return new Response(

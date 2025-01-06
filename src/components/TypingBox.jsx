@@ -1,81 +1,85 @@
+import 'regenerator-runtime/runtime'; 
 import { useAITeacher } from "@/hooks/useAITeacher";
-import { useState, useRef, useEffect } from "react";
-
-const isSpeechRecognitionSupported = () => {
-  return "SpeechRecognition" in window || "webkitSpeechRecognition" in window;
-};
+import { useState, useRef, useEffect} from "react";
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
 
 export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) => {
   const askAI = useAITeacher((state) => state.askAI);
   const loading = useAITeacher((state) => state.loading);
   const [question, setQuestion] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const recognitionRef = useRef(null);
-
-  useEffect(() => {
-    if (typeof window !== "undefined" && isSpeechRecognitionSupported()) {
-      recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognitionRef.current.lang = "en-IN";
-    }
 
 
-  }, []);
+  const {
+    transcript,
+    resetTranscript,
+    browserSupportsSpeechRecognition,
+  } = useSpeechRecognition();
 
-
+  
+  const timeoutRef = useRef(null);
 
   const startRecording = () => {
-    if (!recognitionRef.current) {
-      alert("Speech Recognition is not supported in this browser.");
+    if (!browserSupportsSpeechRecognition) {
+      alert("Not supported");
       return;
     }
-
+  
     setIsRecording(true);
-
-    try {
-      recognitionRef.current.start();
-
-      recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setQuestion((prevQuestion) => prevQuestion + " " + transcript.trim());
-      };
-
-      recognitionRef.current.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        alert(`Error occurred during speech recognition: ${event.error}`);
-        setIsRecording(false);
-      };
-
-    } catch (error) {
-      console.error("Error starting speech recognition:", error);
-      alert("There was an error starting speech recognition. Please try again.");
-      setIsRecording(false);
-    }
+    SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+  
+    // Start a timeout to detect silence
+    resetSilenceTimeout();
+  };
+  
+  // Reset the silence timeout when user speaks
+  const resetSilenceTimeout = () => {
+    clearTimeout(timeoutRef.current);
+    timeoutRef.current = setTimeout(() => {
+      console.log("No speech detected for 3 seconds. Stopping recording.");
+      stopRecording();
+    }, 3000);
   };
 
-  const stopRecording = () => {
-    if (recognitionRef.current) {
-      recognitionRef.current.stop();
-      setIsRecording(false);
+  const stopRecording = async () => {
+    setIsRecording(false);
+    SpeechRecognition.stopListening();
+    const trimmedTranscript = question.trim();
+    
+    clearTimeout(timeoutRef.current);
 
-      if (question.trim()) {
-        ask();
-      }
+    if (trimmedTranscript) {
+      await ask(trimmedTranscript);  // Ensure `ask` is called async
     }
-  };
-
-  const ask = () => {
-    if (!question.trim()) return;
-    askAI(question);
     setQuestion("");
+    resetTranscript(); 
+  };
+
+  useEffect(() => {
+
+    if (transcript.trim()) {
+      resetSilenceTimeout(); // Reset the silence timer when the user speaks
+    }
+
+    setQuestion(transcript);
+  }, [transcript]);
+
+  const ask = async (questionText) => {
+    if (!questionText.trim()) return;
+    try {
+      await askAI(questionText);  // Assuming askAI is async
+      // setQuestion("");
+      resetTranscript(); 
+    } catch (error) {
+      console.error("Error while asking AI:", error);
+    }
   };
 
   return (
     <div
       className={`relative z-10 flex flex-col bg-gradient-to-tr from-slate-300/30 
       via-gray-400/30 to-slate-600/30 p-4 backdrop-blur-md rounded-lg border border-slate-100/30 shadow-md 
-      transition-all duration-300 ${
-        showTypingField ? "w-full max-w-[800px]" : "w-30"
-      } mx-auto`}
+      transition-all duration-300 ${showTypingField ? "w-full max-w-[800px]" : "w-30"} mx-auto`}
     >
       {showTypingField && (
         <div className="flex flex-col md:flex-row gap-3">
@@ -84,29 +88,29 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
               className="w-full bg-slate-800/60 p-3 rounded-lg text-white placeholder:text-white/50 shadow-inner 
               focus:outline focus:outline-white/80 text-base md:text-sm pr-10"
               placeholder="Ask a question?"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && ask()}
+              value={question}  // Bind input value to the `question` state
+              onChange={(e) => setQuestion(e.target.value)}  // Update question state
+              onKeyDown={(e) => e.key === "Enter" && ask(question)} // Ensure `ask` is called with the correct argument
             />
           </div>
 
           <div className="flex gap-2 items-center justify-center">
             <button
-              className={`px-4 py-2 rounded-lg text-white text-sm bg-blue-500 ${
-                !question.trim() ? "opacity-50 cursor-not-allowed" : ""
+              className={`px-4 py-2 rounded-lg text-white text-sm bg-blue-700 ${
+                !transcript.trim() ? "opacity-50 cursor-not-allowed" : ""
               }`}
-              onClick={ask}
-              disabled={!question.trim()}
+              onClick={() => ask(question)}  // Ensure `ask` is called with the current question
+              disabled={!transcript.trim()}
             >
               Ask
             </button>
             <button
-              className={`px-4 py-2 rounded-lg text-white text-sm ${
-                isRecording ? "bg-red-500" : "bg-green-500"
-              }`}
-              onClick={isRecording ? stopRecording : startRecording}
+              className={`w-11 h-11 md:w-13 md:h-13 py-1 px-1 rounded-full text-white text-sm ${isRecording ? "bg-red-500" : "bg-green-500"}`}
+              onClick={isRecording ? stopRecording : startRecording} // Toggle between start and stop recording
             >
-              {isRecording ? "Stop" : "Start"}
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 12V13C20 17.4183 16.4183 21 12 21C7.58172 21 4 17.4183 4 13V12M12 17C9.79086 17 8 15.2091 8 13V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V13C16 15.2091 14.2091 17 12 17Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              </svg>
             </button>
           </div>
         </div>
@@ -114,21 +118,22 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
 
       {!showTypingField && (
         <div className="flex flex-col items-center">
-          {showVoicePreview && question && (
+
+          {showVoicePreview && transcript && (
             <div className="mt-2 p-2 bg-gray-800 text-white rounded-lg shadow">
-              <p className="text-center">{question}</p>
+              <p className="text-center">{transcript}</p>
             </div>
           )}
+
           <button
             className={`w-14 h-14 md:w-16 md:h-16 p-4 rounded-full text-white ${
               isRecording ? "bg-red-500 animate-pulse" : "bg-blue-500 hover:bg-blue-700"
             } text-2xl shadow-lg`}
-            onMouseDown={startRecording}
-            onMouseUp={stopRecording}
-            onTouchStart={startRecording}
-            onTouchEnd={stopRecording}
-          >
-           <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M20 12V13C20 17.4183 16.4183 21 12 21C7.58172 21 4 17.4183 4 13V12M12 17C9.79086 17 8 15.2091 8 13V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V13C16 15.2091 14.2091 17 12 17Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
+            onClick={isRecording ? stopRecording : startRecording} >
+
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 12V13C20 17.4183 16.4183 21 12 21C7.58172 21 4 17.4183 4 13V12M12 17C9.79086 17 8 15.2091 8 13V7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7V13C16 15.2091 14.2091 17 12 17Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
           </button>
         </div>
       )}
@@ -144,4 +149,3 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
     </div>
   );
 };
-
