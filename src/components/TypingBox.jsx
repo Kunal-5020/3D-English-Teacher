@@ -97,7 +97,7 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
           <div className="flex gap-2 items-center justify-center">
             <button
               className={`px-4 py-2 rounded-lg text-white text-sm bg-blue-700 ${
-                !transcript.trim() ? "opacity-50 cursor-not-allowed" : ""
+                !question.trim() ? "opacity-50 cursor-not-allowed" : ""
               }`}
               onClick={() => ask(question)}  // Ensure `ask` is called with the current question
               disabled={!transcript.trim()}

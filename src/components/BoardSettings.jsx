@@ -4,7 +4,7 @@ export const BoardSettings = () => {
   const teacher = useAITeacher((state) => state.teacher);
   const setTeacher = useAITeacher((state) => state.setTeacher);
 
-  const Language = useAITeacher((state) => state.Language); // Corrected typo
+  const Language = useAITeacher((state) => state.language); 
   const setLanguage = useAITeacher((state) => state.setLanguage);
 
   return (
