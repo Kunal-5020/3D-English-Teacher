@@ -15,7 +15,7 @@ export const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata = {
-  title: "AI Sensei",
+  title: "3D-English-Teacher",
   description: "Learn Japanese with AI Sensei",
 };
 

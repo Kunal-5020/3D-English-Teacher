@@ -4,7 +4,7 @@ import path from 'path';
 // Path to save user data
 // const filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
 const filePath = path.join('/tmp', 'userData.json');
-
+ 
 /**
  * Save user data to a file.
  * @param {object} data - User data to store.
