@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Experience } from "./Experience";
+// import { Experience } from "./Experience";
+import Dashboard from "./dashboard/userDashboard";
 import Auth from "./auth/Auth";
 
 export default function Main() {
@@ -27,7 +28,7 @@ export default function Main() {
 
   return (
     <main className="h-screen flex flex-col items-center justify-center">
-      {isAuthenticated ? <Experience /> : <Auth setIsAuthenticated={setIsAuthenticated} />}
+      {isAuthenticated ? <Dashboard /> : <Auth setIsAuthenticated={setIsAuthenticated} />}
     </main>
   );
 }

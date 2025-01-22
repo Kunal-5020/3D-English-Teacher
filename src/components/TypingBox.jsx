@@ -68,7 +68,7 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
     if (!questionText.trim()) return;
     try {
       await askAI(questionText);  // Assuming askAI is async
-      // setQuestion("");
+      setQuestion("");
       resetTranscript(); 
     } catch (error) {
       console.error("Error while asking AI:", error);
@@ -97,10 +97,11 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
           <div className="flex gap-2 items-center justify-center">
             <button
               className={`px-4 py-2 rounded-lg text-white text-sm bg-blue-700 ${
-                !question.trim() ? "opacity-50 cursor-not-allowed" : ""
+                !question.trim() ? "opacity-50 pointer-events-auto" : ""
               }`}
-              onClick={() => ask(question)}  // Ensure `ask` is called with the current question
-              disabled={!transcript.trim()}
+              onClick={() => ask(question)}  
+              onTouchStart={(e) => e.stopPropagation()} // Prevent the button from being clicked twice
+              disabled={!question.trim()}
             >
               Ask
             </button>
