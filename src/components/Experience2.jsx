@@ -18,6 +18,7 @@ import { BoardSettings } from "./BoardSettings";
 import { MessagesList } from "./MessagesList";
 import { Teacher } from "./Teacher";
 
+
 const itemPlacement = {
   default: {
     classroom: {
@@ -32,38 +33,166 @@ const itemPlacement = {
   },
 };
 
-export const Experience = ({ lesson }) => {
-  const { teacher, classroom, setLessonData } = useAITeacher((state) => state);
+export const Experience = ({ lesson, lessoninfo }) => {
+  const { teacher, classroom, playMessage, stopMessage, currentMessage } =
+    useAITeacher((state) => state);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [audioPlayer, setAudioPlayer] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [lessonData, setLessonData] = useState([]);
 
-  // Local state to handle lessonData if it's not directly available
-  const [lessonData, setLocalLessonData] = useState(null);
-
-  // Update lessonData based on the lesson passed in as a prop
+  const [showEndPopup, setShowEndPopup] = useState(false);
+  
   useEffect(() => {
-    if (setLessonData) {
-      setLessonData(lesson);  // Assuming setLessonData exists in useAITeacher
-    } else {
-      setLocalLessonData(lesson);  // Use local state if necessary
-    }
-    console.log('Lesson data:', lesson);  // You can use this data for further handling
-  }, [lesson, setLessonData]);
+    useAITeacher.setState({ isLesson: true }); // Correct state update
+  }, []);
 
+  useEffect(() => {
+    if (lesson && lesson.audioFiles && lesson.textFiles) {
+      const combinedLessonData = lesson.textFiles.map((text, index) => ({
+        text,
+        audio: lesson.audioFiles[index] || null,
+      }));
+      setLessonData(combinedLessonData);
+    }
+  }, [lesson]);
+
+
+  // Start the audio after a delay of 5 seconds on page load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (lessonData.length > 0 && lessonData[currentStep]) {
+        const { text, audio } = lessonData[currentStep];
+        const message = { question: null, answer: text, id: currentStep };
+        useAITeacher.setState(state => ({
+          currentMessage: message,
+          messages: [...state.messages, message],
+          loading: false,
+        }));
+
+        const newAudioPlayer = new Audio(audio);
+        newAudioPlayer.onended = handleAudioEnd;
+        setAudioPlayer(newAudioPlayer);
+        playMessage(message);
+
+        newAudioPlayer.play();
+        setIsPlaying(true);
+      }
+    }, 5000); // 5-second delay
+
+    return () => clearTimeout(timer); // Clean up the timer on unmount
+  }, [lessonData, currentStep, playMessage]);
+
+  const handlePlay = () => {
+    if (audioPlayer) {
+      
+      audioPlayer.play();
+      setIsPlaying(true);
+      useAITeacher.setState({
+        currentMessage: 'Playing...',
+      });
+    }
+  };
+
+  const handlePause = () => {
+    if (audioPlayer) {
+      audioPlayer.pause();
+      setIsPlaying(false);
+      useAITeacher.setState({
+        currentMessage: null
+      });
+    }
+  };
+
+  // const handleRestart = () => {
+  //   if (audioPlayer) {
+  //     audioPlayer.currentTime = 0;
+  //     audioPlayer.play();
+  //     setIsPlaying(true);
+  //   }
+  // };
+
+  // const handleNextStep = () => {
+  //   if (currentStep < lessonData.length - 1) {
+  //     setCurrentStep((prev) => prev + 1);
+  //   } else {
+  //     stopMessage(currentMessage);
+  //     setAudioPlayer(null);
+  //     setIsPlaying(false);
+  //   }
+  // };
+
+    // Handle audio end and show the end popup
+    const handleAudioEnd = () => {
+      setShowEndPopup(true); // Show the popup once audio ends
+    };
+  
+    // Return to the dashboard
+    const returnToDashboard = () => {
+      // Implement logic to go back to the dashboard or reset lesson state
+      setShowEndPopup(false); // Hide the popup
+      // You can reset lesson or navigate to dashboard here
+    };
+  
+    // Restart the lesson
+    const restartLesson = () => {
+      setShowEndPopup(false); // Hide the popup
+      setCurrentStep(0); // Restart from the first step
+      setIsPlaying(false); // Reset play state
+    };
+
+  if (!lessonData || lessonData.length === 0) {
+    return <div>Loading lesson data...</div>;
+  }
 
   return (
     <>
-    <div className="z-10 md:justify-center fixed bottom-4 left-4 right-4 flex gap-3 flex-wrap justify-stretch">
-        <button>start</button>
-    </div>
+      <div className="z-10 fixed bottom-4 left-4 right-4 flex flex-wrap justify-center gap-3">
+        <button
+          onClick={handlePlay}
+          disabled={isPlaying}
+          className="px-6 py-3 text-white font-bold bg-blue-500 rounded-lg transition duration-200 hover:bg-blue-600 active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          Play
+        </button>
+        <button
+          onClick={handlePause}
+          disabled={!isPlaying}
+          className="px-6 py-3 text-white font-bold bg-blue-500 rounded-lg transition duration-200 hover:bg-blue-600 active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          Pause
+        </button>
 
-      {/* Show the Leva panel here */}
+
+        
+      {/* {showEndPopup && (
+        <div className="end-popup">
+          <p>Lesson completed!</p>
+          <button onClick={returnToDashboard}>Return to Dashboard</button>
+          <button onClick={restartLesson}>Restart Lesson</button>
+        </div>
+      )} */}
+
+        {/* <button
+          onClick={handleRestart}
+          className="px-6 py-3 text-white font-bold bg-blue-500 rounded-lg transition duration-200 hover:bg-blue-600 active:scale-95"
+        >
+          Restart
+        </button>
+        <button
+          onClick={handleNextStep}
+          disabled={currentStep >= lessonData.length - 1}
+          className="px-6 py-3 text-white font-bold bg-blue-500 rounded-lg transition duration-200 hover:bg-blue-600 active:scale-95 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        >
+          Next
+        </button> */}
+
+
+      </div>
+
       <Leva hidden />
-      
       <Loader />
-      <Canvas
-        camera={{
-          position: [0, 0, 0.0001],
-        }}
-      >
+      <Canvas camera={{ position: [0, 0, 0.0001] }}>
         <CameraManager />
 
         <Suspense>
@@ -73,7 +202,7 @@ export const Experience = ({ lesson }) => {
               {...itemPlacement[classroom].board}
               distanceFactor={1}
             >
-              <MessagesList />
+              <MessagesList lessonInfo={lessoninfo}/>
               <BoardSettings />
             </Html>
             <Environment preset="sunset" />
@@ -122,6 +251,14 @@ const CameraManager = () => {
 
   const [isMobile, setIsMobile] = useState(false);
   const [cameraData, setCameraData] = useState({ position: [], zoom: 1 });
+
+  useEffect(() => {
+    if (controls.current && currentMessage) {
+      controls.current.setPosition(0, -1, 3, true); // Adjust for active speaking
+      controls.current.zoomTo(2, true);
+    }
+  }, [currentMessage]);
+
 
   useEffect(() => {
     // Detect if the screen size is mobile

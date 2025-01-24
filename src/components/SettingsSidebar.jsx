@@ -14,13 +14,7 @@ export const SettingsSidebar = ({
     setShowVoicePreview(!showVoicePreview);
   };
 
-  const handleLogout = () => {
-    // Clear the token from localStorage
-    localStorage.removeItem("token");
-    sessionStorage.removeItem("greetingSent");
-    // Optionally, redirect the user to the login page
-    window.location.reload(); // Refresh the page to reset the state
-  };
+  
 
   return (
     <div
@@ -67,13 +61,7 @@ export const SettingsSidebar = ({
         </div>
       )}
 
-      {/* Logout Button */}
-      <button
-        onClick={handleLogout}
-        className="absolute bottom-4 left-4 right-4 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded shadow-md transition-colors"
-      >
-        Logout
-      </button>
+     
     </div>
   );
 };

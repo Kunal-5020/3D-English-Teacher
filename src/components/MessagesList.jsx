@@ -1,22 +1,52 @@
 import { useAITeacher } from "@/hooks/useAITeacher";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export const MessagesList = () => {
+export const MessagesList = (lessonInfo) => {
   const messages = useAITeacher((state) => state.messages);
   const playMessage = useAITeacher((state) => state.playMessage);
   const stopMessage = useAITeacher((state) => state.stopMessage);
   const { currentMessage } = useAITeacher();
+  const {isLesson} = useAITeacher();
   const classroom = useAITeacher((state) => state.classroom);
 
   const container = useRef();
+  const [isScrolling, setIsScrolling] = useState(false);
 
+if(isLesson){
+  useEffect(() => {
+    if (!isScrolling) return;
+    if (currentMessage === null) return;
+
+    const scrollInterval = setInterval(() => {
+      if (container.current.scrollTop < container.current.scrollHeight - container.current.clientHeight) {
+        container.current.scrollTop += 1.1;  // Adjust the scroll speed here
+      } else {
+        clearInterval(scrollInterval);
+        setIsScrolling(false);
+      }
+    }, 50);  // Adjust the interval for smoother scroll
+
+    return () => clearInterval(scrollInterval);
+  }, [messages.length, isScrolling, currentMessage]);
+
+  useEffect(() => {
+    if (messages.length > 0) {
+      setIsScrolling(true);  // Start scrolling when new message arrives
+    }
+  }, [messages]);
+}
+else{
   useEffect(() => {
     container.current.scrollTo({
       top: container.current.scrollHeight,
       behavior: "smooth",
     });
   }, [messages.length]);
+}
 
+
+
+if(!isLesson){
 
   return (
     <div
@@ -43,10 +73,16 @@ export const MessagesList = () => {
             <div className="flex-grow">
               <div className="flex items-center gap-3">
                 <p className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90">
-          {message.answer.ReplyForUser}
+                <p
+                  className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90"
+                  dangerouslySetInnerHTML={{
+                    __html: message.answer.replace(/\n/g, "<br />"),
+                  }}
+                  />
         </p>
               </div>
             </div>
+                
             {currentMessage === message ? (
               <button
                 className="text-white/65"
@@ -103,5 +139,47 @@ export const MessagesList = () => {
         </div>
       ))}
     </div>
-  );
+  )
+}
+else{
+  return (
+    <div
+      className={`${
+        classroom === "default"
+          ? "w-[1288px] h-[676px]"
+          : "w-[2528px] h-[856px]"
+      } p-8 overflow-y-auto flex flex-col space-y-8 bg-transparent opacity-80`}
+      ref={container}
+    >
+      {messages.length === 0 && (
+        <div className="h-full w-full grid place-content-center text-center">
+          <h2 className="text-8xl font-bold text-white/90 italic">
+          {lessonInfo}
+          </h2>
+        </div>
+      )}
+      {messages.map((message, i) => (
+        <div key={i}>
+          <div className="flex">
+            <div className="flex-grow">
+              <div className="flex items-center gap-3">
+                <p className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90">
+                <p
+                  className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90"
+                  dangerouslySetInnerHTML={{
+                    __html: message.answer.replace(/\n/g, "<br />"),
+                  }}
+                  />
+        </p>
+              </div>
+            </div>
+                
+            
+          </div>
+          
+        </div>
+      ))}
+    </div>
+  )
+}
 };

@@ -1,6 +1,6 @@
 .dashboard-container {
     display: flex;
-    width: 100%;
+    width: 100vw;
     height: 100vh;
     color: #333;
     position: relative; /* Allow the "Show" button to be fixed */
@@ -76,8 +76,8 @@
 /* Button Styles */
 .toggle-sidebar-button {
     position: fixed; /* Fix it to the top-left corner */
-    bottom: 20px; /* Add padding on top */
-    left: 20px; /* Add padding on left */
+    bottom: 5px; /* Add padding on top */
+    left: 5px; /* Add padding on left */
     background-color: none;
     border: none;
     border-radius: 5px;
@@ -175,4 +175,33 @@
     font-size: 18px;
     font-weight: bold;
     color: #333;
+}
+
+ .logout{
+    background: red;
+    border-radius:8px ;
+}
+
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 11;
+    color: aliceblue;
+}
+
+.doubts-section {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background-color: #f9f9f9;
+}
+
+.black {
+    color:black
 }

@@ -10,6 +10,7 @@ const ANIMATION_FADE_TIME = 0.5;
 export function Teacher({ teacher, ...props }) {
   const group = useRef();
   const { scene } = useGLTF(`/models/Teacher_${teacher}.glb`);
+  
   useEffect(() => {
     scene.traverse((child) => {
       if (child.material) {
@@ -26,7 +27,7 @@ export function Teacher({ teacher, ...props }) {
   const { actions, mixer } = useAnimations(animations, group);
   const [animation, setAnimation] = useState("Idle");
 
-  // Imported from r3f-virtual-girlfriend project
+  // Blink effect
   const [blink, setBlink] = useState(false);
 
   useEffect(() => {
@@ -60,16 +61,12 @@ export function Teacher({ teacher, ...props }) {
     // Blinking
     lerpMorphTarget("eye_close", blink ? 1 : 0, 0.5);
 
-    // Talking
+    // Reset all morph targets before setting new ones
     for (let i = 0; i <= 21; i++) {
-      lerpMorphTarget(i, 0, 0.1); // reset morph targets
+      lerpMorphTarget(i, 0, 0.1);
     }
 
-    if (
-      currentMessage &&
-      currentMessage.visemes &&
-      currentMessage.audioPlayer
-    ) {
+    if (currentMessage && currentMessage.visemes && currentMessage.audioPlayer) {
       for (let i = currentMessage.visemes.length - 1; i >= 0; i--) {
         const viseme = currentMessage.visemes[i];
         if (currentMessage.audioPlayer.currentTime * 1000 >= viseme[0]) {
@@ -77,13 +74,14 @@ export function Teacher({ teacher, ...props }) {
           break;
         }
       }
+
       if (
         actions[animation].time >
         actions[animation].getClip().duration - ANIMATION_FADE_TIME
       ) {
         setAnimation((animation) =>
           animation === "Talking" ? "Talking2" : "Talking"
-        ); // Could load more type of animations and randomization here
+        );
       }
     }
   });

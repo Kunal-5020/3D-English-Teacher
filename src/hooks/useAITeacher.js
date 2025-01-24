@@ -10,8 +10,9 @@ export const useAITeacher = create((set, get) => ({
   classroom: "default",
   speech: "formal",
   loading: false,
-  lessonData: null,
+
   userInteracted: false, 
+  isLesson: false,
 
   setTeacher: (teacher) => {
     set(() => ({}));
@@ -28,11 +29,7 @@ export const useAITeacher = create((set, get) => ({
     set(() => ({ language }));
   },
 
-  setlessonData: (lessonData) => {
-    set(() => ({ lessonData }));
-    get().loadLessonContent(lessonData);
-  },
-
+ 
   setSpeech: (speech) => {
     set(() => ({ speech }));
   },
@@ -41,56 +38,19 @@ export const useAITeacher = create((set, get) => ({
     set(() => ({ userInteracted: true }));
   },
 
-  loadLessonContent: async (lessonData) => {
-    const language = lessonData.replace(/-.*/, "");
-    const lesson = lessonData.match(/-(\d+)$/)?.[1];
-    console.log("Language:", language, "Lesson:", lesson);
-
-    try {
-      const textPath = `/assets/${language}/${lesson}/text/1.1.txt`;
-      const textRes = await fetch(textPath);
-
-      if (!textRes.ok) {
-        throw new Error(`Lesson text not found at ${textPath}`);
-      }
-
-      const textContent = await textRes.text();
-
-      const message = {
-        id: get().messages.length,
-        question: `Playing lesson: ${lessonData}`,
-        answer: { ReplyForUser: textContent },
-      };
-
-      set((state) => ({
-        messages: [...state.messages, message],
-        currentMessage: message,
-      }));
-
-      get().playMessage(message);
-    } catch (error) {
-      console.error(`Error loading lesson content for ${lessonData}:`, error);
-    }
-  },
-
-
   askAI: async (question) => {
     if (!question) return;
 
-    const { speech, messages, lessonData } = get();
+    const { speech, messages } = get();
 
     set(() => ({ loading: true }));
-
-    if (lessonData) {
-      get().loadLessonContent(lessonData);
-    } else {
       try {
         const res = await fetch(`/api/ai?question=${encodeURIComponent(question)}`);
         const data = await res.json();
 
         const message = {
           question,
-          answer: data.result,
+          answer: data.result.ReplyForUser,
           id: messages.length,
           speech,
         };
@@ -106,15 +66,14 @@ export const useAITeacher = create((set, get) => ({
         console.error("Error fetching AI response:", error);
         set(() => ({ loading: false }));
       }
-    }
-  },
+    } ,
 
   playMessage: async (message) => {
     set(() => ({ currentMessage: message }));
 
     if (!get().userInteracted) {
         console.warn("Audio playback is blocked until user interaction.");
-        return; // Exit if no user interaction
+        return;
     }
 
     if (message.audioPlayer && message.audioPlayer.paused) {
@@ -122,80 +81,50 @@ export const useAITeacher = create((set, get) => ({
         return;
     }
 
-    const {lessonData} = get();
+    if(!get().isLesson){  
+    set(() => ({ loading: true }));
+    try {
+        const audioRes = await fetch(`/api/tts?teacher=${get().teacher}&text=${encodeURIComponent(message.answer)}&language=${get().language}`);
+        if (!audioRes.ok) throw new Error("Failed to fetch audio.");
+        const audioBlob = await audioRes.blob();
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audioPlayer = new Audio(audioUrl);
 
-    if (lessonData) {
-        // Load lesson-specific content
-        const language = lessonData.replace(/-.*/, "");
-    const lesson = lessonData.match(/-(\d+)$/)?.[1];
-    console.log("Language:", language, "Lesson:", lesson," -> audio");
-        
-        try {
-            const audioPath = `/assets/${language}/${lesson}/audio/1.1.mp3`;
-            const audioRes = await fetch(audioPath);
-            const audioBlob = await audioRes.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audioPlayer = new Audio(audioUrl);
+        audioPlayer.onended = () => {
+            set(() => ({ currentMessage: null }));
+        };
 
-            audioPlayer.onended = () => {
-                set(() => ({ currentMessage: null }));
-            };
+        message.audioPlayer = audioPlayer;
+        audioPlayer.play();
 
-            message.audioPlayer = audioPlayer;
-            audioPlayer.currentTime = 0;
-            audioPlayer.play();
-
-            // Update state with new audio player
-            set(() => ({
-                messages: get().messages.map((m) => (m.id === message.id ? message : m)),
-            }));
-        } catch (error) {
-            console.error(`Error playing lesson audio for ${lessonData}:`, error);
-        }
-    } else {
-        // Generate audio dynamically for AI-generated messages
-        set(() => ({ loading: true }));
-        try {
-            const audioRes = await fetch(
-                `/api/tts?teacher=${get().teacher}&text=${encodeURIComponent(
-                    message.answer.ReplyForUser
-                )}&language=${get().language}`
-            );
-            const audioBlob = await audioRes.blob();
-            const audioUrl = URL.createObjectURL(audioBlob);
-            const audioPlayer = new Audio(audioUrl);
-
-            // Extract visemes for additional features
-            const visemes = await extractVisemesFromAudio(audioBlob);
-            message.visemes = visemes;
-            message.audioPlayer = audioPlayer;
-
-            audioPlayer.onended = () => {
-                set(() => ({ currentMessage: null }));
-            };
-
-            set(() => ({
-                messages: get().messages.map((m) => (m.id === message.id ? message : m)),
-                loading: false,
-            }));
-
-            audioPlayer.currentTime = 0;
-            audioPlayer.play();
-        } catch (error) {
-            console.error("Error in playMessage:", error);
-            set(() => ({ loading: false }));
-        }
+        set(() => ({
+            messages: get().messages.map((m) => (m.id === message.id ? message : m)),
+            loading: false,
+        }));
+    } catch (error) {
+        console.error("Error in playMessage:", error);
+        set(() => ({ loading: false }));
     }
+  } else{
+    set(() => ({
+      messages: get().messages.map((m) => (m.id === message.id ? message : m)),
+      loading: false,
+    }));
+  }
 },
 
 
-  stopMessage: (message) => {
-    if (message.audioPlayer) {
-      message.audioPlayer.pause();
-      message.audioPlayer.currentTime = 0; // Reset audio to the start
-    }
-    set(() => ({ currentMessage: null }));
-  },
+
+stopMessage: (message) => {
+  if (!message || !message.audioPlayer) {
+    return; // Exit early if the message or audioPlayer is null/undefined
+  }
+  message.audioPlayer.pause();
+  message.audioPlayer.currentTime = 0; // Reset audio to the start
+  set(() => ({ currentMessage: null }));
+},
+
+
 }));
 
 const extractVisemesFromAudio = async (audioBlob) => {
