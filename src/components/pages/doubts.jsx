@@ -1,4 +1,4 @@
-import { Experience } from "../Experience2";
+import { Experience } from "../Experience";
 
 const Doubts =()=>{
     return(
