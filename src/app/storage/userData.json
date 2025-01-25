@@ -5,7 +5,7 @@
   "password": "$argon2id$v=19$m=65536,t=3,p=4$DxtE/Bz+THZpLn5BzlUgjg$ZfZNdJPV70NhyBOv1u13lW67II5tB/EbV38RVNruZwQ",
   "age": 21,
   "highestEducation": "graduate",
-  "allHistorySummary": "We covered regular past tense verbs ('-ed' ending) and started exploring irregular past tense verbs.  Kunal understands regular verbs. We are now focusing on forming sentences with irregular past tense verbs.  Next step: solidify understanding of irregular verbs through sentence construction.",
+  "allHistorySummary": "",
   "createdAt": "2025-01-03T15:15:27.418Z",
   "updatedAt": "2025-01-24T09:03:42.382Z",
   "__v": 0
