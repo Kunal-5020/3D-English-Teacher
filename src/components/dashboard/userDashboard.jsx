@@ -133,7 +133,7 @@ const Dashboard = () => {
             <div className="content-section">{renderContent()}</div>
 
             {/* Conditional Rendering for Sidebar Toggle */}
-            {currentView !== 'doubts'  && (
+            {currentView !== 'doubts' && (
                 <button
                     className={`toggle-sidebar-button ${isSidebarHidden ? 'rotate' : ''}`}
                     onClick={() => setSidebarHidden(!isSidebarHidden)}
@@ -146,7 +146,6 @@ const Dashboard = () => {
                 </button>
             )}
 
-                
         </div>
     );
 };
