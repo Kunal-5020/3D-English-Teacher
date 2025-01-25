@@ -8,6 +8,7 @@ import {
   Gltf,
   Html,
   Loader,
+  Plane,
   useGLTF,
 } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
@@ -33,14 +34,14 @@ const itemPlacement = {
   },
 };
 
-export const Experience = ({ lesson, lessoninfo }) => {
+export const Experience = ({ lesson , closeDoubtsSection}) => {    //, lessoninfo 
   const { teacher, classroom, playMessage, stopMessage, currentMessage } =
     useAITeacher((state) => state);
   const [currentStep, setCurrentStep] = useState(0);
   const [audioPlayer, setAudioPlayer] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [lessonData, setLessonData] = useState([]);
-
+  let temp ;
   const [showEndPopup, setShowEndPopup] = useState(false);
   
   useEffect(() => {
@@ -48,10 +49,11 @@ export const Experience = ({ lesson, lessoninfo }) => {
   }, []);
 
   useEffect(() => {
-    if (lesson && lesson.audioFiles && lesson.textFiles) {
+    if (lesson && lesson.audioFiles && lesson.textFiles && lesson.visemes) {
       const combinedLessonData = lesson.textFiles.map((text, index) => ({
         text,
         audio: lesson.audioFiles[index] || null,
+        visemes: lesson.visemes[index] || null,
       }));
       setLessonData(combinedLessonData);
     }
@@ -62,15 +64,26 @@ export const Experience = ({ lesson, lessoninfo }) => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (lessonData.length > 0 && lessonData[currentStep]) {
-        const { text, audio } = lessonData[currentStep];
-        const message = { question: null, answer: text, id: currentStep };
+        const { text, audio,visemes} = lessonData[currentStep];
+        const newAudioPlayer = new Audio(audio);
+
+
+        const message = { question: null,
+                          answer: text,
+                          id: currentStep,
+                          visemes: visemes,
+                        audioPlayer: newAudioPlayer};  ;
+        if (temp == null){
+          temp = message;
+        }
+      
         useAITeacher.setState(state => ({
           currentMessage: message,
           messages: [...state.messages, message],
           loading: false,
         }));
 
-        const newAudioPlayer = new Audio(audio);
+        
         newAudioPlayer.onended = handleAudioEnd;
         setAudioPlayer(newAudioPlayer);
         playMessage(message);
@@ -85,14 +98,16 @@ export const Experience = ({ lesson, lessoninfo }) => {
 
   const handlePlay = () => {
     if (audioPlayer) {
-      
+      console.log("Playing audio",temp);
       audioPlayer.play();
       setIsPlaying(true);
       useAITeacher.setState({
-        currentMessage: 'Playing...',
+        currentMessage: temp,
       });
     }
   };
+
+  
 
   const handlePause = () => {
     if (audioPlayer) {
@@ -101,6 +116,12 @@ export const Experience = ({ lesson, lessoninfo }) => {
       useAITeacher.setState({
         currentMessage: null
       });
+    }
+  };
+
+  const handleClose = () => {
+    if (closeDoubtsSection) {
+      closeDoubtsSection(audioPlayer); // Call the function received via props
     }
   };
 
@@ -147,6 +168,7 @@ export const Experience = ({ lesson, lessoninfo }) => {
 
   return (
     <>
+    <button className="close-button black" onClick={handleClose}> ✖ </button>
       <div className="z-10 fixed bottom-4 left-4 right-4 flex flex-wrap justify-center gap-3">
         <button
           onClick={handlePlay}
@@ -162,7 +184,7 @@ export const Experience = ({ lesson, lessoninfo }) => {
         >
           Pause
         </button>
-
+        
 
         
       {/* {showEndPopup && (
@@ -202,7 +224,7 @@ export const Experience = ({ lesson, lessoninfo }) => {
               {...itemPlacement[classroom].board}
               distanceFactor={1}
             >
-              <MessagesList lessonInfo={lessoninfo}/>
+               <MessagesList />    {/* lessonInfo={lessoninfo} */}
               <BoardSettings />
             </Html>
             <Environment preset="sunset" />

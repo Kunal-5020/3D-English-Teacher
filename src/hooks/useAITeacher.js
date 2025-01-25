@@ -89,11 +89,13 @@ export const useAITeacher = create((set, get) => ({
         const audioBlob = await audioRes.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         const audioPlayer = new Audio(audioUrl);
+        // const visemes = JsonWebTokenError.parse(await audioRes.headers.get("visemes"));
 
         audioPlayer.onended = () => {
             set(() => ({ currentMessage: null }));
         };
-
+        
+        // message.visemes = visemes;
         message.audioPlayer = audioPlayer;
         audioPlayer.play();
 
@@ -110,6 +112,8 @@ export const useAITeacher = create((set, get) => ({
       messages: get().messages.map((m) => (m.id === message.id ? message : m)),
       loading: false,
     }));
+
+    // console.log("viseme data", message.visemes);
   }
 },
 
@@ -127,16 +131,6 @@ stopMessage: (message) => {
 
 }));
 
-const extractVisemesFromAudio = async (audioBlob) => {
-  return new Promise((resolve) => {
-    const mockVisemes = [
-      { time: 0.0, viseme: "a" },
-      { time: 0.5, viseme: "e" },
-      { time: 1.0, viseme: "o" },
-    ];
-    resolve(mockVisemes); // Return mock data for now
-  });
-};	
 
 // Add a listener to track user interaction
 if (typeof window !== "undefined") {

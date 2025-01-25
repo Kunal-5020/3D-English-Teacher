@@ -122,7 +122,7 @@ export const TypingBox = ({ showTypingField = true, showVoicePreview = false }) 
 
           {showVoicePreview && transcript && (
             <div className="mt-2 p-2 bg-gray-800 text-white rounded-lg shadow">
-              <p className="text-center">{transcript}</p>
+              <span className="text-center">{transcript}</span>
             </div>
           )}
 

@@ -12,6 +12,9 @@ const data = {
             textFiles: [
                 "/assets/English/1/text/1.txt",
             ],
+            visemes:[
+                "/assets/English/1/audio/visemes.json",
+            ]
         },
     },
     Hindi: {
@@ -22,11 +25,14 @@ const data = {
             textFiles: [
                 "/assets/Hindi/1/text/1.txt",
             ],
+            visemes:[
+                "/assets/Hindi/1/audio/visemes.json",
+            ]
         },
     },
 };
 
-const Lessons = () => {
+const Lessons = ({ closeDoubtsSection }) => {
     const lessons = Array.from({ length: 90 }, (_, i) => `Lesson ${i + 1}`);
     const [lessonInfo, setLessonInfo] = useState(null);
     const [lessonData, setLessonData] = useState(null);
@@ -59,11 +65,23 @@ const Lessons = () => {
                 })
             );
 
-            // Return processed lesson data
-            return {
-                textFiles: textContents,
-                audioFiles: audioContents,
-            };
+           // Fetch viseme file content
+      const visemeContents = await Promise.all(
+        lessonContent.visemes.map(async (visemeFile) => {
+          const response = await fetch(visemeFile);
+          if (!response.ok) throw new Error(`Failed to fetch ${visemeFile}`);
+          return response.json(); // Parse viseme data as JSON
+        })
+      );
+    //   console.log(visemeContents);
+
+      // Return processed lesson data
+      return {
+        textFiles: textContents,
+        audioFiles: audioContents,
+        visemes: visemeContents,
+      };
+
         } catch (error) {
             console.error('Error fetching lesson data: ', error);
             return null;
@@ -112,7 +130,8 @@ const Lessons = () => {
     )
     :
     (
-        <Experience lesson={lessonData} lessonInfo={lessonInfo} />
+        // <Experience lesson={lessonData} lessonInfo={lessonInfo} closeDoubtsSection={closeDoubtsSection} />
+        <h1>Under Maintainence</h1>
     );
 };
 

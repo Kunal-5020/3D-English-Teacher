@@ -16,9 +16,12 @@ const Dashboard = () => {
         window.location.reload();
     };
 
-    const closeDoubtsSection = () => {
+    const closeDoubtsSection = (audioPlayer) => {
+        if (audioPlayer && audioPlayer.pause) {
+          audioPlayer.pause(); // Pause the audio
+        }
         setCurrentView('userInfo');
-    };
+      };
 
     useEffect(() => {
         setSidebarHidden(!isSidebarHidden);
@@ -29,10 +32,8 @@ const Dashboard = () => {
             case 'lessons':
                 return (
                     <div className="doubts-section">
-                        <button className="close-button black" onClick={closeDoubtsSection}>
-                        ✖
-                        </button>
-                        <Lessons/>;
+                        
+                        <Lessons closeDoubtsSection={closeDoubtsSection}/>;
                 </div>
                 )
             case 'doubts':

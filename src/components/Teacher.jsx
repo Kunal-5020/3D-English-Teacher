@@ -55,7 +55,7 @@ export function Teacher({ teacher, ...props }) {
     }
   }, [currentMessage, loading]);
 
-  useFrame(({ camera }) => {
+  useFrame(() => {  // {camera}
     // Smile
     lerpMorphTarget("mouthSmile", 0.2, 0.5);
     // Blinking
@@ -65,7 +65,7 @@ export function Teacher({ teacher, ...props }) {
     for (let i = 0; i <= 21; i++) {
       lerpMorphTarget(i, 0, 0.1);
     }
-
+    
     if (currentMessage && currentMessage.visemes && currentMessage.audioPlayer) {
       for (let i = currentMessage.visemes.length - 1; i >= 0; i--) {
         const viseme = currentMessage.visemes[i];
@@ -84,6 +84,7 @@ export function Teacher({ teacher, ...props }) {
         );
       }
     }
+    
   });
 
   useEffect(() => {
