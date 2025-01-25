@@ -6,9 +6,12 @@ import Settings from '../pages/settings';
 
 const Dashboard = () => {
     const [currentView, setCurrentView] = useState('userInfo');
-    const [completedLessons, setCompletedLessons] = useState(67);
-    const totalLessons = 90;
+    
     const [isSidebarHidden, setSidebarHidden] = useState(false);
+
+    const userData = JSON.parse(localStorage.getItem('UserInformation'));
+    console.log('result -',userData);
+
 
     const handleLogout = () => {
         localStorage.removeItem("token");
@@ -50,28 +53,32 @@ const Dashboard = () => {
             default:
                 return (
                     <div className="user-info-section">
-                        <h2>Your Progress</h2>
-                        <div className="completed-lessons-section">
-                            <div className="wrapper">
-                                <div
-                                    className="circle left"
-                                    style={{
-                                        animationDuration: `${6 - (completedLessons / totalLessons) * 10}s`,
-                                    }}
-                                ></div>
-                                <div
-                                    className="circle right"
-                                    style={{
-                                        animationDuration: `${3 - (completedLessons / totalLessons) * 5}s`,
-                                    }}
-                                ></div>
-                                <div className="center-text">
-                                    {completedLessons}/{totalLessons}
-                                </div>
-                            </div>
-                            <button className="continue-button">Continue</button>
+                    <div className="user-info-card">
+                      <div className="user-info-header">
+                        <div className="avatar">
+                          <img src={ '/profile.png'} alt="User Avatar" />
                         </div>
+                        <div className="user-info-name">
+                          <h2>{userData.name}</h2>
+                          <p className="user-info-title">Learner</p>
+                        </div>
+                      </div>
+                      <div className="user-info-details">
+                        <div className="user-info-item">
+                          <span className="user-info-label">Age:</span>
+                          <span className="user-info-value">{userData.age}</span>
+                        </div>
+                        <div className="user-info-item">
+                          <span className="user-info-label">Highest Education:</span>
+                          <span className="user-info-value">{userData.highestEducation}</span>
+                        </div>
+                        <div className="user-info-item">
+                          <span className="user-info-label">Email:</span>
+                          <span className="user-info-value">{userData.email}</span>
+                        </div>
+                      </div>
                     </div>
+                  </div>
                 );
         }
     };

@@ -33,7 +33,7 @@ export async function POST(req) {
     });
     saveUserData(user);
     return new Response(
-      JSON.stringify({ message: "Login successful", token}),
+      JSON.stringify({ message: "Login successful", token , user}),
       { status: 200 }
     );
   } catch (error) {

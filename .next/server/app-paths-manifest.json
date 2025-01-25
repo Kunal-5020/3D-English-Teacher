@@ -1,11 +1,5 @@
 {
-  "/_not-found": "app/_not-found.js",
-  "/api/ai/route": "app/api/ai/route.js",
-  "/api/auth/signup/route": "app/api/auth/signup/route.js",
-  "/api/auth/updatehistory/route": "app/api/auth/updatehistory/route.js",
-  "/api/auth/login/route": "app/api/auth/login/route.js",
-  "/api/tts/route": "app/api/tts/route.js",
   "/page": "app/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js",
-  "/api/getuser/route": "app/api/getuser/route.js"
+  "/api/ai/route": "app/api/ai/route.js",
+  "/api/tts/route": "app/api/tts/route.js"
 }

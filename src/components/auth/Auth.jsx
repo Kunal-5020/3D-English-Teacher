@@ -54,6 +54,7 @@ const Auth = ({ setIsAuthenticated }) => {
         if (isLogin) {
           // Save token in localStorage and update authentication state
           localStorage.setItem("token", result.token);
+          localStorage.setItem("UserInformation", JSON.stringify(result.user));
           setIsAuthenticated(true); // Update parent component to indicate user is logged in
           setMessage("Login Successful!");
           
