@@ -83,12 +83,29 @@ export async function GET(req) {
     // Decode base64 audio content and prepare it as a buffer
     const audioBuffer = Buffer.from(audioContent, 'base64');
 
-    let visemes;
-    try{
-      visemes = await lipsyncData(audioBuffer);
-    } catch (error) {
-      console.error('Error in lipsyncData:', error);
-    }
+    let visemes = [
+      [ 240, 21 ],  [ 290, 5 ],   [ 430, 18 ],
+      [ 500, 5 ],   [ 640, 8 ],   [ 710, 5 ],
+      [ 870, 0 ],   [ 940, 21 ],  [ 1140, 5 ],
+      [ 1280, 1 ],  [ 1420, 5 ],  [ 1560, 21 ],
+      [ 1640, 1 ],  [ 1860, 21 ], [ 2000, 7 ],
+      [ 2390, 0 ],  [ 2520, 5 ],  [ 2590, 21 ],
+      [ 2730, 5 ],  [ 2870, 21 ], [ 2950, 1 ],
+      [ 3130, 19 ], [ 3340, 21 ], [ 3830, 0 ],
+      [ 4170, 21 ], [ 4240, 5 ],  [ 4320, 1 ],
+      [ 4440, 8 ],  [ 4500, 5 ],  [ 4570, 7 ],
+      [ 4990, 21 ], [ 5060, 6 ],  [ 5130, 5 ],
+      [ 5200, 21 ], [ 5280, 5 ],  [ 5310, 1 ],
+      [ 5390, 21 ], [ 5570, 0 ],  [ 5620, 21 ],
+      [ 5660, 5 ],  [ 5780, 1 ],  [ 5830, 5 ],
+      [ 5940, 21 ], [ 6290, 5 ],  [ 6360, 6 ],
+      [ 6440, 0 ]
+    ];
+    // try{
+    //   visemes = await lipsyncData(audioBuffer);
+    // } catch (error) {
+    //   console.error('Error in lipsyncData:', error);
+    // }
 
     
 
