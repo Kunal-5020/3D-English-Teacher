@@ -1,10 +1,15 @@
 import fs from 'fs';
 import path from 'path';
 
+const isVercel = process.env.VERCEL === '1'; 
+let filePath;
 // Path to save user data
+if (isVercel) {
+    filePath = path.join('/tmp', 'userData.json');}
+  else{
+    filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
+  }
 
-// const filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
-const filePath = path.join('/tmp', 'userData.json');
  
 /**
  * Save user data to a file.
@@ -13,7 +18,6 @@ const filePath = path.join('/tmp', 'userData.json');
 export function saveUserData(data) {
   // Convert data to a JSON string and write to the file
   fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-  console.log('saved');
 }
 
 /**

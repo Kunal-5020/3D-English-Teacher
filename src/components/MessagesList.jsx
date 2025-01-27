@@ -76,11 +76,11 @@ if(!isLesson){
                 <p
                   className="text-4xl inline-block px-2 rounded-sm font-bold bg-clip-text text-transparent bg-gradient-to-br from-blue-300/90 to-white/90"
                   dangerouslySetInnerHTML={{
-                    __html: message.answer.replace(/\n/g, "<br />"),
+                    __html: message.answer
                   }}
                   />
         </p>
-              </div>
+              </div>  
             </div>
                 
             {currentMessage === message ? (

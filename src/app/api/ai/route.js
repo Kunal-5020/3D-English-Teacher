@@ -73,10 +73,18 @@ User - ${question}
 // console.log('checklist day ->',Math.ceil((new Date() - new Date(userData.createdAt)) / (1000 * 60 * 60 * 24))+1);
 
   try {
+let result;
+    try {
+      result = await model.generateContent(prompt);
+    } catch (error) {
+      console.error("Error generating content:", error);
+      // Optionally log the detailed error response from the API
+      console.log(error.response);
+    }
 
-    const result = await model.generateContent(prompt);
-    let example;
 
+
+    let example;  
 
     try {
       example = JSON.parse(
@@ -85,7 +93,6 @@ User - ${question}
           .trim()
       );
       
-
     } catch (parseError) {
       throw new Error("Failed to parse AI response JSON");
     }
@@ -100,14 +107,15 @@ User - ${question}
       }),
     ].join("; ");
     
-    userData.checklist = example.ChecklistDay;
     userData.allHistorySummary = example.AllSummaryHistory;
 
     updateUserHistory(userData._id,userData.allHistorySummary);
     
     saveUserData(userData);
 
-    return new Response(JSON.stringify({ result: example }), {
+    
+
+    return new Response(JSON.stringify({ result: example.ReplyForUser}), {
       headers: {
         "Content-Type": "application/json",
         "Set-Cookie": updatedCookies,

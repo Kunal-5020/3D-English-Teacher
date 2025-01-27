@@ -2,9 +2,11 @@ import fetch from "node-fetch";
 import dotenv from "dotenv";
 import fs from 'fs/promises';
 import path from 'path';
-import os from 'os';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import os from 'os';
+
+const isVercel = process.env.VERCEL === '1'; 
 
 dotenv.config();
 
@@ -17,6 +19,8 @@ export async function GET(req) {
     .replace(/[-+]/g, ',')  // Only replace minus and plus symbols
     .replace(/\s+/g, ' ')    // Replace multiple spaces with a single space
     .trim();  // Remove leading/trailing spaces
+
+  
   
   // Initialize language and handle potential errors when retrieving it
   let language = "English";  // Default to English
@@ -79,19 +83,21 @@ export async function GET(req) {
     // Decode base64 audio content and prepare it as a buffer
     const audioBuffer = Buffer.from(audioContent, 'base64');
 
-    // let visemes;
-    // try{
-    //   visemes = await lipsyncData(audioBuffer);
-    // } catch (error) {
-    //   console.error('Error in lipsyncData:', error);
-    // }
+    let visemes;
+    try{
+      visemes = await lipsyncData(audioBuffer);
+    } catch (error) {
+      console.error('Error in lipsyncData:', error);
+    }
+
+    
 
     // Return the audio as a response
     return new Response(audioBuffer, {
       headers: {
         "Content-Type": "audio/mpeg",
         "Content-Disposition": `inline; filename=${voice}-voice.mp3`,
-        // Visemes: Buffer.from(JSON.stringify(visemes)).toString("base64"),
+        Visemes: Buffer.from(JSON.stringify(visemes)).toString("base64"),
       },
     });
   } catch (error) {
@@ -155,17 +161,33 @@ const lipsyncData = async (audioBuffer) => {
 const execPromise = promisify(exec);
 
 // Function to process the audio buffer and extract phonetic data using rhubarb
+const getTempFilePaths = (message) => {
+  // Determine base path based on the environment (local vs Vercel)
+  const tempDir = isVercel ? '/tmp' : path.join(os.tmpdir(), 'my-app');  // For Vercel, use /tmp for temp files
+  
+  // Create paths for the temporary files
+  const tempFilePath = path.join(tempDir, `temp_${message}.wav`);
+  const outputJsonPath = path.join(tempDir, `message_${message}.json`);
+
+  return { tempFilePath, outputJsonPath };
+};
+
+// Function to process the audio buffer and extract phonetic data using rhubarb
 export const processAudioBuffer = async (buffer, message) => {
-  const tempFilePath = path.join(os.tmpdir(), `temp_${message}.wav`);
-  const outputJsonPath = path.join(os.tmpdir(), `message_${message}.json`);
+  const { tempFilePath, outputJsonPath } = getTempFilePaths(message);
 
   try {
+    // Ensure the directory exists before writing to it
+    const tempDir = path.dirname(tempFilePath);
+    await fs.mkdir(tempDir, { recursive: true });
+
     // Write the buffer to the temporary file
     await fs.writeFile(tempFilePath, buffer);
 
     // Run rhubarb on the temporary WAV file
     const rhubarbCommand = `rhubarb -f json -o "${outputJsonPath}" "${tempFilePath}" -r phonetic`;
 
+    // Execute rhubarb command (assumes rhubarb is installed and available)
     await execPromise(rhubarbCommand);
 
     // Optionally, delete the temporary file after processing
