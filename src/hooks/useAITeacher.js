@@ -47,7 +47,7 @@ export const useAITeacher = create((set, get) => ({
       try {
         const res = await fetch(`/api/ai?question=${encodeURIComponent(question)}`);
         const data = await res.json();
-        console.log("AI response:", data);
+        
 
         const message = {
           question,
@@ -124,7 +124,7 @@ export const useAITeacher = create((set, get) => ({
       loading: false,
     }));
 
-    console.log("viseme data", message.visemes);
+    
   }
 },
 
