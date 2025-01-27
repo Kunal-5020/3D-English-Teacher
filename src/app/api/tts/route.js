@@ -103,12 +103,12 @@ export async function GET(req) {
     ] ;
 
 
-    // try{
-    //   // Create a new audio context
-    //   visemes = await lipsyncData(audioBuffer);
-    // } catch (error) {
-    //   console.error('Error in lipsyncData:', error);
-    // }
+    try{
+      // Create a new audio context
+      visemes = await lipsyncData(audioBuffer);
+    } catch (error) {
+      console.error('Error in lipsyncData:', error);
+    }
 
     
 
