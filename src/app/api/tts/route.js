@@ -69,7 +69,7 @@ export async function GET(req) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch audio: ${response.statusText}`);
+      throw new Error(`Failed to fetch audio 5 5: ${response.statusText}`);
     }
 
     // Extract the JSON body from the response which contains the audio data
