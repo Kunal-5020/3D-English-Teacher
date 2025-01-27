@@ -92,10 +92,10 @@ export const useAITeacher = create((set, get) => ({
       }
 
         // Extract visemes from the header
-        const visemesHeader = audioRes.headers.get("Visemes");
-        if (!visemesHeader) throw new Error("Visemes header not found.");
+        // const visemesHeader = audioRes.headers.get("Visemes");
+        // if (!visemesHeader) throw new Error("Visemes header not found.");
 
-        const visemes = JSON.parse(atob(visemesHeader)); // Decode Base64 and parse JSON
+        // const visemes = JSON.parse(atob(visemesHeader)); // Decode Base64 and parse JSON
 
         const audioBlob = await audioRes.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
@@ -106,7 +106,7 @@ export const useAITeacher = create((set, get) => ({
             set(() => ({ currentMessage: null }));
         };
         
-        message.visemes = visemes;
+        // message.visemes = visemes;
         message.audioPlayer = audioPlayer;
         audioPlayer.play();
 
