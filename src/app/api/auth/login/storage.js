@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 // Path to save user data
+
 // const filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
 const filePath = path.join('/tmp', 'userData.json');
  
@@ -27,13 +28,9 @@ export function getUserData() {
   return null;
 }
 
-/**
- * Clear user data from file (optional).
- */
+
 export function clearUserData() {
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath); // Delete the file
   }
 }
-
-

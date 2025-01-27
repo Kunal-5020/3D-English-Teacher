@@ -1,9 +1,10 @@
 import fetch from "node-fetch";
 import dotenv from "dotenv";
-import fs from 'fs';
+import fs from 'fs/promises';
 import path from 'path';
-import { exec } from 'child_process';
 import os from 'os';
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
 dotenv.config();
 
@@ -45,7 +46,7 @@ export async function GET(req) {
     voice = teacher === "Nanami" ? "en-IN-Journey-F" : "en-IN-Journey-D";
   }
 
-  const audioEncoding = "MP3";  
+  const audioEncoding = "LINEAR16";  
 
   const ttsRequest = {
     input: { text },
@@ -78,14 +79,19 @@ export async function GET(req) {
     // Decode base64 audio content and prepare it as a buffer
     const audioBuffer = Buffer.from(audioContent, 'base64');
 
-    // const visemes = await lipsyncData(audioBuffer);
+    let visemes;
+    try{
+      visemes = await lipsyncData(audioBuffer);
+    } catch (error) {
+      console.error('Error in lipsyncData:', error);
+    }
 
     // Return the audio as a response
     return new Response(audioBuffer, {
       headers: {
         "Content-Type": "audio/mpeg",
         "Content-Disposition": `inline; filename=${voice}-voice.mp3`,
-        // Visemes: JSON.stringify(visemes),
+        Visemes: Buffer.from(JSON.stringify(visemes)).toString("base64"),
       },
     });
   } catch (error) {
@@ -130,51 +136,42 @@ const lipsyncData = async (audioBuffer) => {
     };
 
     // Execute the transformation on the `currentData` (the viseme data you got from the buffer)
-    const visemes = transformVisemeData(currentData, visemeMap);
-
-    console.log('Visemes:', visemes);
+    const visemes = transformVisemeData(currentData.mouthCues, visemeMap);
+    return visemes;
   } catch (error) {
     console.error('Error processing lipsync data:', error);
   }
 };
 
+const execPromise = promisify(exec);
+
 // Function to process the audio buffer and extract phonetic data using rhubarb
-const processAudioBuffer = async (buffer, message) => {
+export const processAudioBuffer = async (buffer, message) => {
   const tempFilePath = path.join(os.tmpdir(), `temp_${message}.wav`);
-  const outputJsonPath = path.join(`message_${message}.json`);
+  const outputJsonPath = path.join(os.tmpdir(), `message_${message}.json`);
 
   try {
     // Write the buffer to the temporary file
-    await fs.promises.writeFile(tempFilePath, buffer);
+    await fs.writeFile(tempFilePath, buffer);
 
-    // Now run rhubarb on the temporary WAV file
-    const rhubarbCommand = `rhubarb -f json -o ${outputJsonPath} ${tempFilePath} -r phonetic`;
+    // Run rhubarb on the temporary WAV file
+    const rhubarbCommand = `rhubarb -f json -o "${outputJsonPath}" "${tempFilePath}" -r phonetic`;
 
     await execPromise(rhubarbCommand);
 
     // Optionally, delete the temporary file after processing
-    await fs.promises.unlink(tempFilePath);
+    await fs.unlink(tempFilePath);
 
     // Read and return the processed JSON data
-    const data = await fs.promises.readFile(outputJsonPath, 'utf8');
-    const jsonData = JSON.parse(data);
-    return jsonData;
+    const data = await fs.readFile(outputJsonPath, 'utf8');
+
+    // Optionally, delete the output JSON file after reading
+    await fs.unlink(outputJsonPath);
+
+    return JSON.parse(data);
   } catch (err) {
     console.error('Error in processAudioBuffer:', err);
     throw err;
   }
 };
 
-// Wrapper for `exec` to return a promise
-const execPromise = (command) => {
-  return new Promise((resolve, reject) => {
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        reject(`Error executing rhubarb: ${stderr}`);
-      } else {
-        console.log('Rhubarb processing complete:', stdout);
-        resolve(stdout);
-      }
-    });
-  });
-};

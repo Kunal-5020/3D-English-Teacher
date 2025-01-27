@@ -10,7 +10,6 @@ const Dashboard = () => {
     const [isSidebarHidden, setSidebarHidden] = useState(false);
 
     const userData = JSON.parse(localStorage.getItem('UserInformation'));
-    console.log('result -',userData);
 
 
     const handleLogout = () => {

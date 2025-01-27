@@ -55,7 +55,6 @@ export const useAITeacher = create((set, get) => ({
           id: messages.length,
           speech,
         };
-        console.log("message", message);
         set((state) => ({
           currentMessage: message,
           messages: [...state.messages, message],
@@ -87,16 +86,23 @@ export const useAITeacher = create((set, get) => ({
     try {
         const audioRes = await fetch(`/api/tts?teacher=${get().teacher}&text=${encodeURIComponent(message.answer)}&language=${get().language}`);
         if (!audioRes.ok) throw new Error("Failed to fetch audio.");
+
+        // Extract visemes from the header
+        const visemesHeader = audioRes.headers.get("Visemes");
+        if (!visemesHeader) throw new Error("Visemes header not found.");
+
+        const visemes = JSON.parse(atob(visemesHeader)); // Decode Base64 and parse JSON
+
         const audioBlob = await audioRes.blob();
         const audioUrl = URL.createObjectURL(audioBlob);
         const audioPlayer = new Audio(audioUrl);
-        // const visemes = JsonWebTokenError.parse(await audioRes.headers.get("visemes"));
+        
 
         audioPlayer.onended = () => {
             set(() => ({ currentMessage: null }));
         };
         
-        // message.visemes = visemes;
+        message.visemes = visemes;
         message.audioPlayer = audioPlayer;
         audioPlayer.play();
 
@@ -114,7 +120,7 @@ export const useAITeacher = create((set, get) => ({
       loading: false,
     }));
 
-    // console.log("viseme data", message.visemes);
+    console.log("viseme data", message.visemes);
   }
 },
 
