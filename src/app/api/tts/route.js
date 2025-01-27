@@ -6,7 +6,7 @@ import { exec } from 'child_process';
 import { promisify } from 'util';
 import os from 'os';
 
-const isVercel = process.env.VERCEL === '1'; 
+
 
 dotenv.config();
 
@@ -160,21 +160,15 @@ const lipsyncData = async (audioBuffer) => {
 
 const execPromise = promisify(exec);
 
-// Function to process the audio buffer and extract phonetic data using rhubarb
-const getTempFilePaths = (message) => {
-  // Determine base path based on the environment (local vs Vercel)
-  const tempDir = isVercel ? '/tmp' : path.join(os.tmpdir(), 'my-app');  // For Vercel, use /tmp for temp files
-  
-  // Create paths for the temporary files
-  const tempFilePath = path.join(tempDir, `temp_${message}.wav`);
-  const outputJsonPath = path.join(tempDir, `message_${message}.json`);
-
-  return { tempFilePath, outputJsonPath };
-};
 
 // Function to process the audio buffer and extract phonetic data using rhubarb
 export const processAudioBuffer = async (buffer, message) => {
-  const { tempFilePath, outputJsonPath } = getTempFilePaths(message);
+  
+  const tempFilePath = path.join('/tmp', `temp_${message}.wav`);
+  const outputJsonPath = path.join('/tmp', `message_${message}.json`);
+
+  // const tempFilePath = path.join(path.join(os.tmpdir(), 'my-app'), `temp_${message}.wav`);
+  // const outputJsonPath = path.join(path.join(os.tmpdir(), 'my-app'), `message_${message}.json`);
 
   try {
     // Ensure the directory exists before writing to it

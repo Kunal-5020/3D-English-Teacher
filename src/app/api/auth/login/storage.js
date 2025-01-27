@@ -1,14 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 
-const isVercel = process.env.VERCEL === '1'; 
+
 let filePath;
 // Path to save user data
-if (isVercel) {
-    filePath = path.join('/tmp', 'userData.json');}
-  else{
-    filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
-  }
+
+    filePath = path.join('/tmp', 'userData.json');
+ 
+    // filePath = path.join(process.cwd(), 'src','app','storage', 'userData.json');
+  
 
  
 /**
