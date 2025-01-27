@@ -87,6 +87,7 @@ export const useAITeacher = create((set, get) => ({
         const audioRes = await fetch(`/api/tts?teacher=${get().teacher}&text=${encodeURIComponent(message.answer)}&language=${get().language}`);
         if (!audioRes.ok) {
           const errorData = await audioRes.json();
+          console.error("Error in playMessage:", errorData);
           throw new Error(`Error: ${errorData.error} - ${errorData.message}`);
       }
 
