@@ -103,12 +103,12 @@ export async function GET(req) {
     ] ;
 
 
-    try{
-      // Create a new audio context
-      visemes = await lipsyncData(audioBuffer);
-    } catch (error) {
-      console.error('Error in lipsyncData:', error);
-    }
+    // try{
+    //   // Create a new audio context
+    //   visemes = await lipsyncData(audioBuffer);
+    // } catch (error) {
+    //   console.error('Error in lipsyncData:', error);
+    // }
 
     
 
@@ -183,8 +183,9 @@ const execPromise = promisify(exec);
 
 // Function to process the audio buffer and extract phonetic data using rhubarb
 export const processAudioBuffer = async (buffer) => {
-  // Define paths to temp.wav and message.json in the public folder
-  const tempDir = path.join(os.tmpdir(), 'my-app'); // Create a subdirectory for your app
+  
+  // const tempDir = path.join(os.tmpdir(), 'my-app');
+  const tempDir = '/tmp/my-app';
   const tempFilePath = path.join(tempDir, 'temp.wav');
   const outputJsonPath = path.join(tempDir, 'temp.json');
 
