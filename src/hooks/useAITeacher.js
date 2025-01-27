@@ -85,7 +85,10 @@ export const useAITeacher = create((set, get) => ({
     set(() => ({ loading: true }));
     try {
         const audioRes = await fetch(`/api/tts?teacher=${get().teacher}&text=${encodeURIComponent(message.answer)}&language=${get().language}`);
-        if (!audioRes.ok) throw new Error(`Failed to fetch audio: ${audioRes.statusText} (status: ${audioRes.status})`);
+        if (!audioRes.ok) {
+          const errorData = await audioRes.json();
+          throw new Error(`Error: ${errorData.error} - ${errorData.message}`);
+      }
 
         // Extract visemes from the header
         const visemesHeader = audioRes.headers.get("Visemes");

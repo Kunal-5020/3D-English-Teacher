@@ -95,12 +95,21 @@ export async function GET(req) {
       },
     });
   } catch (error) {
-    console.error("Error generating TTS audio:", error);
-    return new Response(JSON.stringify({ error: "Failed to generate audio" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
+    console.error("Error generating TTS audio:", error);  // Log the error on the server
+
+    // Send a detailed error response to the client
+    return new Response(
+        JSON.stringify({
+            error: "Failed to generate audio",
+            message: error.message || "Unknown error", // Include the error message
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined, // Only include stack trace in development
+        }),
+        {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        }
+    );
+}
 }
 
 // Main function to handle lipsync data processing
