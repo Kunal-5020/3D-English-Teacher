@@ -79,19 +79,19 @@ export async function GET(req) {
     // Decode base64 audio content and prepare it as a buffer
     const audioBuffer = Buffer.from(audioContent, 'base64');
 
-    let visemes;
-    try{
-      visemes = await lipsyncData(audioBuffer);
-    } catch (error) {
-      console.error('Error in lipsyncData:', error);
-    }
+    // let visemes;
+    // try{
+    //   visemes = await lipsyncData(audioBuffer);
+    // } catch (error) {
+    //   console.error('Error in lipsyncData:', error);
+    // }
 
     // Return the audio as a response
     return new Response(audioBuffer, {
       headers: {
         "Content-Type": "audio/mpeg",
         "Content-Disposition": `inline; filename=${voice}-voice.mp3`,
-        Visemes: Buffer.from(JSON.stringify(visemes)).toString("base64"),
+        // Visemes: Buffer.from(JSON.stringify(visemes)).toString("base64"),
       },
     });
   } catch (error) {
