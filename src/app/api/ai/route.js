@@ -69,8 +69,8 @@ You are an advanced English learning assistant tasked with helping users clarify
 User - ${question}
 `;
 
-console.log('history ->',userData.allHistorySummary);
-console.log('checklist day ->',Math.ceil((new Date() - new Date(userData.createdAt)) / (1000 * 60 * 60 * 24))+1);
+// console.log('history ->',userData.allHistorySummary);
+// console.log('checklist day ->',Math.ceil((new Date() - new Date(userData.createdAt)) / (1000 * 60 * 60 * 24))+1);
 
   try {
 

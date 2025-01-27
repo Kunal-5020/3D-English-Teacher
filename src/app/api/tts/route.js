@@ -46,7 +46,7 @@ export async function GET(req) {
     voice = teacher === "Nanami" ? "en-IN-Journey-F" : "en-IN-Journey-D";
   }
 
-  const audioEncoding = "LINEAR16";  
+  const audioEncoding = "LINEAR16";  //wav format (dont go with mp3 as it does not work with rhubarb)
 
   const ttsRequest = {
     input: { text },
