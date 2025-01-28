@@ -1,56 +1,41 @@
 import fetch from "node-fetch";
 import dotenv from "dotenv";
-import fs from 'fs/promises';
-import path from 'path';
-import { exec } from 'child_process';
-import { promisify } from 'util';
-import os from 'os';
-
 
 
 dotenv.config();
 
-const API_KEY = process.env.GOOGLE_CLOUD_API_KEY;  // API Key stored in environment variable
+const API_KEY = process.env.GOOGLE_CLOUD_API_KEY;
 
 export async function GET(req) {
-  // Retrieve 'teacher' and 'text' parameters from the URL query string
   const teacher = req.nextUrl.searchParams.get("teacher") || "Nanami";
   const text = req.nextUrl.searchParams.get("text")
-    .replace(/[-+]/g, ',')  // Only replace minus and plus symbols
-    .replace(/\s+/g, ' ')    // Replace multiple spaces with a single space
-    .trim();  // Remove leading/trailing spaces
+    .replace(/[-+]/g, ',')
+    .replace(/\s+/g, ' ')
+    .trim();
 
-  
-  
-  // Initialize language and handle potential errors when retrieving it
   let language = "English";  // Default to English
-
   try {
-    language = req.nextUrl.searchParams.get("language") || "English";  // Attempt to retrieve the language
-    // If invalid language, default to English
+    language = req.nextUrl.searchParams.get("language") || "English";
     if (language !== "Hindi" && language !== "English") {
       throw new Error(`Invalid language: ${language}`);
     }
   } catch (error) {
     console.warn(`Error retrieving language parameter, defaulting to English. Error: ${error.message}`);
-    language = "English";  // Fallback to English if an error occurs
+    language = "English";  // Fallback to English
   }
 
-  // Initialize languageCode and voice variables
   let languageCode = '';
   let voice = '';
 
-  // Set language-specific configurations
   if (language === 'Hindi') {
-    languageCode = "hi-IN";  // Hindi
+    languageCode = "hi-IN";
     voice = teacher === "Nanami" ? "hi-IN-Wavenet-A" : "hi-IN-Wavenet-C";
-  } 
-  else if (language === 'English') {
-    languageCode = "en-IN";  // Indian English
+  } else if (language === 'English') {
+    languageCode = "en-IN";
     voice = teacher === "Nanami" ? "en-IN-Journey-F" : "en-IN-Journey-D";
   }
 
-  const audioEncoding = "LINEAR16";  //wav format (dont go with mp3 as it does not work with rhubarb)
+  const audioEncoding = "LINEAR16";
 
   const ttsRequest = {
     input: { text },
@@ -59,7 +44,6 @@ export async function GET(req) {
   };
 
   try {
-    // Make the request to the Google Text-to-Speech API with the API key in the URL
     const response = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${API_KEY}`, {
       method: "POST",
       headers: {
@@ -69,10 +53,9 @@ export async function GET(req) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch audio 5 5: ${response.statusText}`);
+      throw new Error(`Failed to fetch audio: ${response.statusText}`);
     }
 
-    // Extract the JSON body from the response which contains the audio data
     const jsonResponse = await response.json();
     const audioContent = jsonResponse.audioContent;
 
@@ -80,139 +63,108 @@ export async function GET(req) {
       throw new Error("Audio content not found in response");
     }
 
-    // Decode base64 audio content and prepare it as a buffer
     const audioBuffer = Buffer.from(audioContent, 'base64');
 
-    let visemes = [
-      [ 240, 21 ],  [ 290, 5 ],   [ 430, 18 ],
-      [ 500, 5 ],   [ 640, 8 ],   [ 710, 5 ],
-      [ 870, 0 ],   [ 940, 21 ],  [ 1140, 5 ],
-      [ 1280, 1 ],  [ 1420, 5 ],  [ 1560, 21 ],
-      [ 1640, 1 ],  [ 1860, 21 ], [ 2000, 7 ],
-      [ 2390, 0 ],  [ 2520, 5 ],  [ 2590, 21 ],
-      [ 2730, 5 ],  [ 2870, 21 ], [ 2950, 1 ],
-      [ 3130, 19 ], [ 3340, 21 ], [ 3830, 0 ],
-      [ 4170, 21 ], [ 4240, 5 ],  [ 4320, 1 ],
-      [ 4440, 8 ],  [ 4500, 5 ],  [ 4570, 7 ],
-      [ 4990, 21 ], [ 5060, 6 ],  [ 5130, 5 ],
-      [ 5200, 21 ], [ 5280, 5 ],  [ 5310, 1 ],
-      [ 5390, 21 ], [ 5570, 0 ],  [ 5620, 21 ],
-      [ 5660, 5 ],  [ 5780, 1 ],  [ 5830, 5 ],
-      [ 5940, 21 ], [ 6290, 5 ],  [ 6360, 6 ],
-      [ 6440, 0 ]
-    ] ;
+    // Step 1: Get viseme data using Google Speech-to-Text API
+    // let visemes = await extractVisemesFromAudio(audioBuffer);
 
-
-    try{
-      // Create a new audio context
-      visemes = await lipsyncData(audioBuffer);
-    } catch (error) {
-      console.error('Error in lipsyncData:', error);
-    }
-
-    
-
-    // Return the audio as a response
+    // Step 2: Process and return the result
     return new Response(audioBuffer, {
       headers: {
         "Content-Type": "audio/mpeg",
         "Content-Disposition": `inline; filename=${voice}-voice.mp3`,
-        Visemes: Buffer.from(JSON.stringify(visemes)).toString("base64"),
+        // Visemes: Buffer.from(JSON.stringify(visemes)).toString("base64"),
       },
     });
   } catch (error) {
-    console.error("Error generating TTS audio:", error);  // Log the error on the server
-
-    // Send a detailed error response to the client
+    console.error("Error generating TTS audio:", error);
     return new Response(
         JSON.stringify({
             error: "Failed to generate audio",
-            message: error.message || "Unknown error", // Include the error message
-            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined, // Only include stack trace in development
+            message: error.message || "Unknown error",
+            stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
         }),
         {
             status: 500,
             headers: { "Content-Type": "application/json" },
         }
     );
-}
+  }
 }
 
-// Main function to handle lipsync data processing
-const lipsyncData = async (audioBuffer) => {
+// Function to extract viseme data from audio using Google Speech-to-Text
+const extractVisemesFromAudio = async (audioBuffer) => {
   try {
-    // Use the `audioBuffer` directly, assuming we have an external method to process it
-    const currentData = await processAudioBuffer(audioBuffer);
+    
 
-    // Mapping values to IDs based on the description
-    const visemeMap = {
-      "A": 1,
-      "B": 21,
-      "C": 5,
-      "D": 8,
-      "E": 19,
-      "F": 18,
-      "G": 7,
-      "H": 6,
-      "X": 0,
+    // Send the audio to Google Speech-to-Text API
+    const sttRequest = {
+      audio: {
+        content: audioBuffer.toString('base64'), // Base64 encode the audio content
+      },
+      config: {
+        encoding: "LINEAR16",
+        sampleRateHertz: 24000, // Assuming the audio sample rate
+        languageCode: 'en-US',  // Example for English, adjust as necessary
+        enableWordTimeOffsets: true, // Enable word-level timestamps
+        enableVisemeData: true, // Enable viseme data
+        enableAutomaticPunctuation: true,
+      },
     };
 
-    // Function to transform viseme data using the provided map
-    const transformVisemeData = (data, map) => {
-      return data.map(item => {
-        // Convert duration to milliseconds
-        const audioOffset = Math.round((item.end) * 1000);
+    const sttResponse = await fetch(`https://speech.googleapis.com/v1/speech:recognize?key=${API_KEY}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(sttRequest),
+    });
 
-        // Map the `value` field to the corresponding ID
-        const visemeID = map[item.value] ?? -1; // Default to -1 if not found
+    const sttJson = await sttResponse.json();
 
-        return [audioOffset, visemeID]; // Output in the format [ID, offset]
-      });
+    console.log("STT Response: ", sttJson.results[0].alternatives[0].words);
+
+    // Step 3: Process phonemes and generate corresponding visemes
+    const words = sttJson.results[0].alternatives[0].words;
+
+    // Create a mapping of words to visemes (this can be improved with more precise lip-sync models)
+    const phonemeToVisemeMap = {
+      // Mouth closed or small opening
+      "AA": 0, "AE": 0, "AH": 0, "AO": 0, "AW": 0, "AY": 0, "EH": 0, "ER": 0, "EY": 0, "IH": 0, "IY": 0, "OH": 0, "OW": 0, "OY": 0, "UH": 0, "UW": 0,
+      
+      // Mouth wide open
+      "B": 1, "P": 1,
+      
+      // Teeth slightly apart
+      "F": 2, "V": 2,
+    
+      // Tongue tip touching the roof
+      "S": 3, "Z": 3, "SH": 3, "ZH": 3, "T": 3, "D": 3, "TH": 3, "DH": 3,
+    
+      // Teeth on lower lip
+      "M": 4, "W": 4,
+    
+      // Lips slightly parted
+      "L": 5, "R": 5, "Y": 5,
+    
+      // Slight smile
+      "IY": 6, "JH": 6,
+    
+      // Neutral or slight mouth movement
+      "G": 7, "K": 7, "N": 7,
+    
+      // Slight mouth opening
+      "CH": 8, "NG": 8
     };
 
-    // Execute the transformation on the `currentData` (the viseme data you got from the buffer)
-    const visemes = transformVisemeData(currentData.mouthCues, visemeMap);
+    const visemes = words.map(word => {
+      const visemeID = phonemeToVisemeMap[word.word] ?? 0;  // Default to 0 if not found
+      return [word.startTime.seconds * 1000, visemeID];  // Map time in milliseconds
+    });
+
     return visemes;
   } catch (error) {
-    console.error('Error processing lipsync data:', error);
+    console.error("Error extracting visemes:", error);
+    throw error;
   }
 };
-
-const execPromise = promisify(exec);
-
-
-// Function to process the audio buffer and extract phonetic data using rhubarb
-export const processAudioBuffer = async (buffer) => {
-  
-  // const tempDir = path.join(os.tmpdir(), 'my-app');
-  const tempDir = '/tmp/my-app';
-  const tempFilePath = path.join(tempDir, 'temp.wav');
-  const outputJsonPath = path.join(tempDir, 'temp.json');
-
-
-
-  try {
-    // Write the buffer to the temp.wav file
-    await fs.writeFile(tempFilePath, buffer);
-
-    // Run the rhubarb command on the temp.wav file
-
-    const rhubarbCommand = `rhubarb -f json -o "${outputJsonPath}" "${tempFilePath}" -r phonetic`;
-
-    await execPromise(rhubarbCommand, { cwd: binPath });
-
-    // Read the JSON data generated by rhubarb
-    const data = await fs.readFile(outputJsonPath, 'utf8');
-
-    // Optionally, clean up the temp.wav and temp.json files
-    // Comment this out if you need the files to persist for debugging
-    // await fs.unlink(tempFilePath);
-    // await fs.unlink(outputJsonPath);
-
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error in processAudioBuffer:', err);
-    throw err;
-  }
-};
-
