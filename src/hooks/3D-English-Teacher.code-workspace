@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "3D-English-Teacher",
+			"path": "../.."
+		},
+		{
+			"name": "bin",
+			"path": "../../../server2/bin"
+		}
+	],
+	"settings": {}
+}

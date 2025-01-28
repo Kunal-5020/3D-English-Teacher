@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import fs from 'fs/promises';
 import path from 'path';
 import { exec } from 'child_process';
-import { promisify } from 'util';
+
 import os from 'os';
 
 
@@ -179,26 +179,28 @@ const lipsyncData = async (audioBuffer) => {
   }
 };
 
-const execPromise = promisify(exec);
 
+// Utility to execute commands in the shell
+const execPromise = (command) =>
+  new Promise((resolve, reject) => {
+    exec(command, (err, stdout, stderr) => {
+      if (err) reject(err);
+      else resolve(stdout || stderr);
+    });
+  });
 
-// Function to process the audio buffer and extract phonetic data using rhubarb
 export const processAudioBuffer = async (buffer) => {
-  
-  const tempDir = path.join(os.tmpdir(), 'my-app');
-  // const tempDir = '/tmp';
+  // const tempDir = os.tmpdir('my-app'); // Use the system temp directory
+  const tempDir = '/tmp'; // Netlify's writable temp directory
   const tempFilePath = path.join(tempDir, 'temp.wav');
   const outputJsonPath = path.join(tempDir, 'temp.json');
-
-
 
   try {
     // Write the buffer to the temp.wav file
     await fs.writeFile(tempFilePath, buffer);
 
     // Run the rhubarb command on the temp.wav file
-
-    const rhubarbCommand = `bin\\rhubarb -f json -o "${outputJsonPath}" "${tempFilePath}" -r phonetic`;
+    const rhubarbCommand = `./bin2/rhubarb -f json -o "${outputJsonPath}" "${tempFilePath}" -r phonetic`;
 
     await execPromise(rhubarbCommand);
 
@@ -206,7 +208,6 @@ export const processAudioBuffer = async (buffer) => {
     const data = await fs.readFile(outputJsonPath, 'utf8');
 
     // Optionally, clean up the temp.wav and temp.json files
-    // Comment this out if you need the files to persist for debugging
     await fs.unlink(tempFilePath);
     await fs.unlink(outputJsonPath);
 
