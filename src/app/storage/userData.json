@@ -6,7 +6,7 @@
   "age": 21,
   "highestEducation": "graduate",
   "checklist": "",
-  "allHistorySummary": "Previous interactions consisted of repeated greetings from the user.  The user has yet to ask a question regarding the lesson.",
+  "allHistorySummary": "User: Welcome Greeting to the user\nAssistant: Hi Kunal!  Great to have you here. What questions do you have about today's lesson?  Let's get those doubts cleared up!\nUser: hello\nAssistant: Hi Kunal!  We already said hello, but I'm ready when you are to tackle those lesson questions. What's on your mind?\nUser: hello\nAssistant: Hey Kunal, we've already said hello!  So, what part of today's lesson is puzzling you? Let's crack it!\nUser: hello\nAssistant: Hey Kunal, we've exchanged greetings enough!  Let's focus on your lesson.  Is there anything specific you'd like to go over? I'm here to help!\nUser: hello\nAssistant: Hey Kunal, we've greeted each other enough! 😄 Let's get down to business. What specifically from today's lesson are you hoping to clarify?\nUser: hello\nAssistant: Okay Kunal, we've done the greetings! 😄 Let's move on to your lesson.  What's causing you trouble today?  Don't hesitate—I'm here to help!\nUser: hello\nAssistant: Kunal, we've said hello multiple times now! 😉 Let's get to those lesson questions.  What's been tricky for you?\nUser: hello\nAssistant: Kunal, we've said hello quite a few times now!  Let's get to the point. What from today's lesson are you finding challenging? I'm ready to assist!",
   "createdAt": "2025-01-03T15:15:27.418Z",
   "updatedAt": "2025-01-27T09:48:20.674Z",
   "__v": 0
