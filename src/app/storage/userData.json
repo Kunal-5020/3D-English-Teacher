@@ -6,7 +6,7 @@
   "age": 21,
   "highestEducation": "graduate",
   "checklist": "",
-  "allHistorySummary": "User: Welcome Greeting to the user\nAssistant: Hi Kunal!  Great to have you here. What questions do you have about today's lesson?  Let's get those doubts cleared up!\nUser: hello\nAssistant: Hi Kunal!  We already said hello, but I'm ready when you are to tackle those lesson questions. What's on your mind?",
+  "allHistorySummary": "Previous interactions consisted of repeated greetings from the user.  The user has yet to ask a question regarding the lesson.",
   "createdAt": "2025-01-03T15:15:27.418Z",
   "updatedAt": "2025-01-27T09:48:20.674Z",
   "__v": 0
