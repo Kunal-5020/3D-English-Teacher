@@ -11,7 +11,7 @@ export default function Main() {
 
   // Check authentication status on mount
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (token) {
       setIsAuthenticated(true);
       setLoading(false);

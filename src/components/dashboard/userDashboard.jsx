@@ -9,11 +9,11 @@ const Dashboard = () => {
     
     const [isSidebarHidden, setSidebarHidden] = useState(false);
 
-    const userData = JSON.parse(localStorage.getItem('UserInformation'));
+    const userData = JSON.parse(sessionStorage.getItem('UserInformation'));
 
 
     const handleLogout = () => {
-        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
         sessionStorage.removeItem("greetingSent");
         window.location.reload();
     };
